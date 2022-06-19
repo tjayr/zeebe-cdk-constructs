@@ -17,11 +17,10 @@ const project = new awscdk.AwsCdkConstructLibrary({
     javaPackage: 'com.github.tjayr.zeebe',
     mavenGroupId: 'com.github.tjayr',
     mavenArtifactId: 'zeebe-cdk-constructs',
+  },
+  renovatebotOptions: {
+    scheduleInterval: ['before 3am on the first day of the month'],
   }
 });
-
-new Renovatebot(project, {
-   scheduleInterval: ['before 3am on the first day of the month'],
-})
 
 project.synth();
