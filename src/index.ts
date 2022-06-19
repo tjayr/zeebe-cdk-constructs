@@ -54,10 +54,10 @@ export interface ZeebeClusterProps {
   readonly namespace?: INamespace;
 
   /**
-     * The ECS cluster to create the cluster in
+     * The ECS cluster to create the Zeebe nodes in. If not specified a new ECS cluster will be created called zeebe-cluster.
      *
      */
-  readonly ecsCluster: ICluster;
+  readonly ecsCluster?: ICluster;
 
   /**
      * An application load balancer. If an application loadbalancer is specified, then the Zeebe Gateway will
@@ -128,6 +128,7 @@ export class ZeebeCluster extends Construct {
   private initProps(options?: Partial<ZeebeClusterProps>): ZeebeClusterProps {
     const defaultVpc = Vpc.fromLookup(this, 'default-vpc', { isDefault: true });
     const securityGroups = this.defaultSecurityGroups(defaultVpc);
+    const ecsCluster = this.getCluster(defaultVpc);
     const defaultNs = new PrivateDnsNamespace(this, 'zeebe-default-ns', {
       name: 'zeebe-cluster.net',
       description: 'Zeebe Cluster Namespace',
@@ -136,10 +137,7 @@ export class ZeebeCluster extends Construct {
 
     const defaults = {
       cpu: 512,
-      ecsCluster: new Cluster(this, 'zeebe-cluster', {
-        clusterName: this.ECS_CLUSTER_NAME,
-        vpc: defaultVpc,
-      }),
+      ecsCluster: ecsCluster,
       loadBalancer: undefined,
       gatewayCpu: 512,
       gatewayMemory: 1024,
@@ -173,7 +171,7 @@ export class ZeebeCluster extends Construct {
   private createGateway(): FargateService {
 
     let fservice = new FargateService(this, 'zeebe-gateway', {
-      cluster: this.props.ecsCluster,
+      cluster: this.getCluster(this.props.vpc),
       desiredCount: 1,
       minHealthyPercent: 100,
       maxHealthyPercent: 200,
@@ -193,7 +191,7 @@ export class ZeebeCluster extends Construct {
   private createBroker(id: number): FargateService {
 
     let fservice = new FargateService(this, 'zeebe-broker-'+id, {
-      cluster: this.props.ecsCluster,
+      cluster: this.getCluster(this.props.vpc),
       desiredCount: 1,
       minHealthyPercent: 100,
       maxHealthyPercent: 200,
@@ -263,6 +261,17 @@ export class ZeebeCluster extends Construct {
     });
 
     return td;
+  }
+
+  private getCluster(defaultVpc: IVpc): ICluster {
+    if (this.props?.ecsCluster == undefined) {
+      return new Cluster(this, 'zeebe-cluster', {
+        clusterName: this.ECS_CLUSTER_NAME,
+        vpc: defaultVpc,
+      });
+    } else {
+      return this.props.ecsCluster;
+    }
   }
 
   private configureCloudMap(): CloudMapOptions {
