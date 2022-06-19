@@ -1,8 +1,8 @@
-const { awscdk } = require('projen');
+const { awscdk, Renovatebot} = require('projen');
 const project = new awscdk.AwsCdkConstructLibrary({
   author: 'Tony Ayres',
   authorAddress: 'tayres@gmail.com',
-  cdkVersion: '2.25.0',
+  cdkVersion: '2.28.0',
   defaultReleaseBranch: 'main',
   name: 'zeebe-cdk-constructs',
   repositoryUrl: 'https://github.com/tjayr/zeebe-cdk-constructs.git',
@@ -15,9 +15,11 @@ const project = new awscdk.AwsCdkConstructLibrary({
     javaPackage: 'com.github.tjayr.zeebe',
     mavenGroupId: 'com.github.tjayr',
     mavenArtifactId: 'zeebe-cdk-constructs',
-  },
-  renovatebot: {
-    scheduleInterval: ['before 3am on the first day of the month']
-  },
+  }
 });
+
+new Renovatebot(project, {
+   scheduleInterval: ['before 3am on the first day of the month'],
+})
+
 project.synth();
