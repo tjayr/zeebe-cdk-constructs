@@ -15,7 +15,9 @@
 /.projen/deps.json linguist-generated
 /.projen/files.json linguist-generated
 /.projen/tasks.json linguist-generated
+/API.md linguist-generated
 /LICENSE linguist-generated
 /package.json linguist-generated
+/renovate.json5 linguist-generated
 /tsconfig.dev.json linguist-generated
 /yarn.lock linguist-generated
