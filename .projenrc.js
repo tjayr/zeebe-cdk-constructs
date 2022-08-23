@@ -1,5 +1,5 @@
 const { awscdk, RenovatebotScheduleInterval } = require('projen');
-const { NodePackageManager } = require('projen/lib/javascript');
+
 const project = new awscdk.AwsCdkConstructLibrary({
   author: 'Tony Ayres',
   authorAddress: 'tayres@gmail.com',
@@ -27,6 +27,10 @@ const project = new awscdk.AwsCdkConstructLibrary({
     scheduleInterval: [RenovatebotScheduleInterval.WEEKENDS],
   }, //,
   //docgen: true
+  dependabot: false,
+  release: false,
+  buildWorkflow: false,
 });
+
 
 project.synth();
