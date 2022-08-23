@@ -3,8 +3,9 @@ import { ContainerImage } from 'aws-cdk-lib/aws-ecs';
 export interface GlobalProps {
 
   /**
-     * Specify a custom container image from a custom registry. The default will be camunda/zeebe:latest from Docker hub
-     */
+   * Using this property you can specify a custom container image from a custom registry.
+   * Defaults to camunda/zeebe:latest from Docker hub if not set.
+   */
   readonly containerImage?: ContainerImage;
 
 }
