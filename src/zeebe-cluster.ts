@@ -11,7 +11,7 @@ import {
   LogDriver,
   Protocol,
 } from 'aws-cdk-lib/aws-ecs';
-import { FileSystem } from 'aws-cdk-lib/aws-efs';
+import { FileSystem, PerformanceMode } from 'aws-cdk-lib/aws-efs';
 import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { DnsRecordType, PrivateDnsNamespace } from 'aws-cdk-lib/aws-servicediscovery';
 import { Construct } from 'constructs';
@@ -48,7 +48,7 @@ export class ZeebeFargateCluster extends Construct {
 
   private initProps(options?: Partial<ZeebeClusterProps>): ZeebeClusterProps {
     const defaultVpc = Vpc.fromLookup(this, 'default-vpc', { isDefault: true });
-    const securityGroups = this.defaultSecurityGroups(defaultVpc);
+    const securityGroup = this.defaultSecurityGroup(defaultVpc);
     const ecsCluster = this.getCluster(defaultVpc);
     const defaultNs = new PrivateDnsNamespace(this, 'zeebe-default-ns', {
       name: 'zeebe-cluster.net',
@@ -56,6 +56,7 @@ export class ZeebeFargateCluster extends Construct {
       vpc: defaultVpc,
     });
     const defaultImage = ContainerImage.fromRegistry('camunda/zeebe:' + this.CAMUNDA_VERSION);
+    const defaultFileSystem = this.defaultZeebeEfs(defaultVpc, securityGroup);
 
     const defaults = {
       containerImage: defaultImage,
@@ -67,11 +68,9 @@ export class ZeebeFargateCluster extends Construct {
       namespace: defaultNs,
       numBrokerNodes: this.defaultNumberOfBrokers,
       numGatewayNodes: 1,
-      securityGroups: securityGroups,
+      securityGroups: [securityGroup],
       vpc: defaultVpc,
-      fileSystem: new FileSystem(this, 'zeebe-efs', {
-        vpc: defaultVpc,
-      }),
+      fileSystem: defaultFileSystem,
     };
 
     return {
@@ -80,14 +79,31 @@ export class ZeebeFargateCluster extends Construct {
     };
   }
 
-  private defaultSecurityGroups(defaultVpc: IVpc): Array<ISecurityGroup> {
+  private defaultZeebeEfs(defaultVpc: IVpc, sg: ISecurityGroup): FileSystem {
+    const efs = new FileSystem(this, 'zeebe-efs', {
+      vpc: defaultVpc,
+      encrypted: false,
+      fileSystemName: 'zeebe-efs',
+      enableAutomaticBackups: false,
+      removalPolicy: RemovalPolicy.DESTROY,
+      performanceMode: PerformanceMode.GENERAL_PURPOSE,
+      vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
+      securityGroup: sg,
+    });
+
+    efs.addAccessPoint('data', { path: '/', posixUser: { uid: '1001', gid: '1001' } });
+    return efs;
+  }
+
+  private defaultSecurityGroup(defaultVpc: IVpc): ISecurityGroup {
     let sg = new SecurityGroup(this, 'default-cluster-security-group', {
       vpc: defaultVpc,
       allowAllOutbound: true,
       securityGroupName: 'zeebe-cluster-sg',
     });
-    sg.addIngressRule(Peer.anyIpv4(), Port.tcpRange(26500, 26502), '', false);
-    return [sg];
+    sg.addIngressRule(Peer.anyIpv4(), Port.tcpRange(26500, 26502), 'Zeebe Ports', false);
+    sg.addIngressRule(Peer.anyIpv4(), Port.tcp(2049), 'EFS Ports', false);
+    return sg;
   }
 
   private createGateway(): FargateService {
