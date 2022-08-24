@@ -10,8 +10,8 @@ import {
   ICluster,
   LogDriver,
   Protocol,
+  Volume,
 } from 'aws-cdk-lib/aws-ecs';
-import { FileSystem } from 'aws-cdk-lib/aws-efs';
 import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { DnsRecordType, PrivateDnsNamespace } from 'aws-cdk-lib/aws-servicediscovery';
 import { Construct } from 'constructs';
@@ -24,6 +24,7 @@ export class ZeebeStandaloneFargateCluster extends Construct {
 
   private CAMUNDA_VERSION: string = 'latest';
   private ECS_CLUSTER_NAME: string = 'zeebe-standalone';
+  private VOLUME_NAME: string = 'zeebe-standalone-data-volume';
 
   private props: ZeebeStandaloneProps;
 
@@ -54,9 +55,7 @@ export class ZeebeStandaloneFargateCluster extends Construct {
       namespace: defaultNs,
       securityGroups: securityGroups,
       vpc: defaultVpc,
-      fileSystem: new FileSystem(this, 'zeebe-efs', {
-        vpc: defaultVpc,
-      }),
+      fileSystem: undefined,
       public: false,
       portMappings: [
         { containerPort: 26500, hostPort: 26500, protocol: Protocol.TCP },
@@ -119,11 +118,9 @@ export class ZeebeStandaloneFargateCluster extends Construct {
       memoryLimitMiB: this.props.memory!,
       family: 'zeebe',
     });
+
     td.applyRemovalPolicy(RemovalPolicy.DESTROY);
-    td.addVolume({
-      name: 'zeebe-standalone-data-volume',
-      efsVolumeConfiguration: { fileSystemId: 'EFS' },
-    });
+
 
     let container = td.addContainer('zeebe-gw', {
       cpu: this.props.cpu!,
@@ -146,13 +143,32 @@ export class ZeebeStandaloneFargateCluster extends Construct {
       }),
     });
 
+    td.addVolume(this.createZeebeVolume());
+
     container.addMountPoints({
       containerPath: '/usr/local/zeebe/data',
-      sourceVolume: 'zeebe-standalone-data-volume',
+      sourceVolume: this.VOLUME_NAME,
       readOnly: false,
     });
 
     return td;
+  }
+
+  private createZeebeVolume(): Volume {
+
+    if (this.props.fileSystem == undefined) {
+      return {
+        name: this.VOLUME_NAME,
+      };
+    }
+
+    return {
+      name: this.VOLUME_NAME,
+      efsVolumeConfiguration: {
+        fileSystemId: this.props.fileSystem?.fileSystemId!,
+        rootDirectory: '/',
+      },
+    };
   }
 
   private getCluster(defaultVpc: IVpc): ICluster {
