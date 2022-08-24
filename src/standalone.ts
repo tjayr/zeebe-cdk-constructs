@@ -29,8 +29,8 @@ export class ZeebeStandaloneFargateCluster extends Construct {
   private props: ZeebeStandaloneProps;
 
   /**
-     * A construct to creates a single standalone Zeebe node that is both gateway and broker deployed on AWS ECS Fargate
-     */
+   * A construct to creates a single standalone Zeebe node that is both gateway and broker deployed on AWS ECS Fargate
+   */
   constructor(scope: Construct, id: string, zeebeProperties: ZeebeStandaloneProps) {
     super(scope, id);
     this.props = this.initProps(zeebeProperties);
@@ -56,7 +56,7 @@ export class ZeebeStandaloneFargateCluster extends Construct {
       securityGroups: securityGroups,
       vpc: defaultVpc,
       fileSystem: undefined,
-      public: false,
+      usePublicSubnets: true,
       portMappings: [
         { containerPort: 26500, hostPort: 26500, protocol: Protocol.TCP },
         { containerPort: 26501, hostPort: 26501, protocol: Protocol.TCP },
@@ -64,13 +64,9 @@ export class ZeebeStandaloneFargateCluster extends Construct {
       ],
       zeebeEnvironmentVars: {
         JAVA_TOOL_OPTIONS: '-Xms512m -Xmx512m ',
-        ZEEBE_STANDALONE_GATEWAY: 'true',
-        ZEEBE_BROKER_GATEWAY_ENABLE: 'true',
         ATOMIX_LOG_LEVEL: 'DEBUG',
         ZEEBE_BROKER_DATA_DISKUSAGECOMMANDWATERMARK: '0.998',
         ZEEBE_BROKER_DATA_DISKUSAGEREPLICATIONWATERMARK: '0.999',
-        ZEEBE_BROKER_EXPORTERS_HAZELCAST_CLASSNAME: 'io.zeebe.hazelcast.exporter.HazelcastExporter',
-        ZEEBE_BROKER_EXPORTERS_HAZELCAST_JARPATH: 'exporters/zeebe-hazelcast-exporter.jar',
         ZEEBE_GATEWAY_NETWORK_HOST: '0.0.0.0',
         ZEEBE_GATEWAY_NETWORK_PORT: '26500',
       },
@@ -103,10 +99,12 @@ export class ZeebeStandaloneFargateCluster extends Construct {
       serviceName: 'zeebe-standalone',
       taskDefinition: this.standaloneTaskDefinition(),
       securityGroups: this.props.securityGroups,
-      vpcSubnets: { subnetType: this.props.public == true ? SubnetType.PUBLIC : SubnetType.PRIVATE_WITH_NAT },
+      assignPublicIp: this.props.usePublicSubnets,
+      vpcSubnets: {
+        subnetType: this.props.usePublicSubnets == true ? SubnetType.PUBLIC : SubnetType.PRIVATE_WITH_NAT,
+      },
       deploymentController: { type: DeploymentControllerType.ECS },
       cloudMapOptions: this.configureCloudMap(),
-      assignPublicIp: false,
     });
 
     return fservice;
