@@ -263,6 +263,7 @@ const zeebeClusterProps: ZeebeClusterProps = { ... }
 | <code><a href="#zeebe-cdk-constructs.ZeebeClusterProps.property.numBrokerNodes">numBrokerNodes</a></code> | <code>number</code> | The number of Zeebe broker nodes to create in the cluster. |
 | <code><a href="#zeebe-cdk-constructs.ZeebeClusterProps.property.numGatewayNodes">numGatewayNodes</a></code> | <code>number</code> | The number of Zeebe gateway nodes to create in the cluster. |
 | <code><a href="#zeebe-cdk-constructs.ZeebeClusterProps.property.securityGroups">securityGroups</a></code> | <code>aws-cdk-lib.aws_ec2.ISecurityGroup[]</code> | The security groups to assign to the cluster. |
+| <code><a href="#zeebe-cdk-constructs.ZeebeClusterProps.property.usePublicSubnets">usePublicSubnets</a></code> | <code>boolean</code> | Create the Zeebe brokers in a public subnet. |
 | <code><a href="#zeebe-cdk-constructs.ZeebeClusterProps.property.vpc">vpc</a></code> | <code>aws-cdk-lib.aws_ec2.IVpc</code> | The VPC that the cluster will be created in. |
 
 ---
@@ -423,6 +424,22 @@ The security groups to assign to the cluster.
 
 ---
 
+##### `usePublicSubnets`<sup>Optional</sup> <a name="usePublicSubnets" id="zeebe-cdk-constructs.ZeebeClusterProps.property.usePublicSubnets"></a>
+
+```typescript
+public readonly usePublicSubnets: boolean;
+```
+
+- *Type:* boolean
+
+Create the Zeebe brokers in a public subnet.
+
+If false the Zeebe brokers will be created in a private subnet (with NAT).
+
+Defaults to true.
+
+---
+
 ##### `vpc`<sup>Optional</sup> <a name="vpc" id="zeebe-cdk-constructs.ZeebeClusterProps.property.vpc"></a>
 
 ```typescript
@@ -458,8 +475,8 @@ const zeebeStandaloneProps: ZeebeStandaloneProps = { ... }
 | <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.memory">memory</a></code> | <code>number</code> | The amount of memory to assign to the broker task. |
 | <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.namespace">namespace</a></code> | <code>aws-cdk-lib.aws_servicediscovery.INamespace</code> | A CloudMap private name space to be used for service discover. |
 | <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.portMappings">portMappings</a></code> | <code>aws-cdk-lib.aws_ecs.PortMapping[]</code> | Override the port mappings of the container. |
-| <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.public">public</a></code> | <code>boolean</code> | Deploy the zeebe instance into a public subnet so that it can be accessed remotely with an ip address. |
 | <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.securityGroups">securityGroups</a></code> | <code>aws-cdk-lib.aws_ec2.ISecurityGroup[]</code> | The security groups to assign to the cluster. |
+| <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.usePublicSubnets">usePublicSubnets</a></code> | <code>boolean</code> | Deploy the zeebe instance into a public subnet so that it can be accessed remotely with an ip address. |
 | <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.vpc">vpc</a></code> | <code>aws-cdk-lib.aws_ec2.IVpc</code> | The VPC that the cluster will be created in. |
 | <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.zeebeEnvironmentVars">zeebeEnvironmentVars</a></code> | <code>any</code> | Override the environment variables passed to the Zeebe container. |
 
@@ -567,20 +584,6 @@ The default port mappings are 26500, 26501, 26502
 
 ---
 
-##### `public`<sup>Optional</sup> <a name="public" id="zeebe-cdk-constructs.ZeebeStandaloneProps.property.public"></a>
-
-```typescript
-public readonly public: boolean;
-```
-
-- *Type:* boolean
-
-Deploy the zeebe instance into a public subnet so that it can be accessed remotely with an ip address.
-
-The default is false
-
----
-
 ##### `securityGroups`<sup>Optional</sup> <a name="securityGroups" id="zeebe-cdk-constructs.ZeebeStandaloneProps.property.securityGroups"></a>
 
 ```typescript
@@ -590,6 +593,20 @@ public readonly securityGroups: ISecurityGroup[];
 - *Type:* aws-cdk-lib.aws_ec2.ISecurityGroup[]
 
 The security groups to assign to the cluster.
+
+---
+
+##### `usePublicSubnets`<sup>Optional</sup> <a name="usePublicSubnets" id="zeebe-cdk-constructs.ZeebeStandaloneProps.property.usePublicSubnets"></a>
+
+```typescript
+public readonly usePublicSubnets: boolean;
+```
+
+- *Type:* boolean
+
+Deploy the zeebe instance into a public subnet so that it can be accessed remotely with an ip address.
+
+The default is true
 
 ---
 

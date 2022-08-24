@@ -71,6 +71,7 @@ export class ZeebeFargateCluster extends Construct {
       securityGroups: [securityGroup],
       vpc: defaultVpc,
       fileSystem: defaultFileSystem,
+      usePublicSubnets: true,
     };
 
     return {
@@ -87,7 +88,7 @@ export class ZeebeFargateCluster extends Construct {
       enableAutomaticBackups: false,
       removalPolicy: RemovalPolicy.DESTROY,
       performanceMode: PerformanceMode.GENERAL_PURPOSE,
-      vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
+      vpcSubnets: { subnetType: SubnetType.PUBLIC },
       securityGroup: sg,
     });
 
@@ -119,7 +120,7 @@ export class ZeebeFargateCluster extends Construct {
       vpcSubnets: { subnetType: SubnetType.PUBLIC },
       deploymentController: { type: DeploymentControllerType.ECS },
       cloudMapOptions: this.configureCloudMap(),
-      assignPublicIp: false,
+      assignPublicIp: this.props.usePublicSubnets!,
     });
 
     return fservice;
@@ -136,7 +137,8 @@ export class ZeebeFargateCluster extends Construct {
       serviceName: 'zeebe-broker-' + id,
       taskDefinition: this.brokerTaskDefinition(id),
       securityGroups: this.props.securityGroups,
-      vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
+      vpcSubnets: { subnetType: this.props.usePublicSubnets == true ? SubnetType.PUBLIC : SubnetType.PRIVATE_WITH_NAT },
+      assignPublicIp: this.props.usePublicSubnets!,
       deploymentController: { type: DeploymentControllerType.ECS },
       cloudMapOptions: this.configureCloudMap(),
     });

@@ -91,7 +91,7 @@ export interface ZeebeStandaloneProps extends GlobalProps {
   /**
      * Deploy the zeebe instance into a public subnet so that it can be accessed remotely with an ip address
      *
-     * The default is false
+     * The default is true
      */
-  readonly public?: boolean;
+  readonly usePublicSubnets?: boolean;
 }
