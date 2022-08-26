@@ -35,7 +35,7 @@ describe('ZeebeCluster', () => {
     // Prepare the stack for assertions.
     let template = Template.fromStack(clusterStack);
     template.resourceCountIs('AWS::EFS::FileSystem', 1);
-    template.resourceCountIs('AWS::EFS::MountTarget', 2);
+    template.resourceCountIs('AWS::EFS::MountTarget', 3);
     template.resourceCountIs('AWS::ECS::Service', 2);
     template.resourceCountIs('AWS::ECS::TaskDefinition', 2);
     template.hasResourceProperties('AWS::ECS::Cluster', {
@@ -66,7 +66,7 @@ describe('ZeebeCluster', () => {
     // Prepare the stack for assertions.
     let template = Template.fromStack(clusterStack);
     template.resourceCountIs('AWS::EFS::FileSystem', 1);
-    template.resourceCountIs('AWS::EFS::MountTarget', 2);
+    template.resourceCountIs('AWS::EFS::MountTarget', 3);
     template.resourceCountIs('AWS::ECS::Service', 3);
     template.resourceCountIs('AWS::ECS::TaskDefinition', 3);
     template.hasResourceProperties('AWS::ECS::Cluster', {
@@ -97,7 +97,7 @@ describe('ZeebeCluster', () => {
     // Prepare the stack for assertions.
     let template = Template.fromStack(clusterStack);
     template.resourceCountIs('AWS::EFS::FileSystem', 1);
-    template.resourceCountIs('AWS::EFS::MountTarget', 2);
+    template.resourceCountIs('AWS::EFS::MountTarget', 3);
     template.resourceCountIs('AWS::ECS::Service', 3);
     template.resourceCountIs('AWS::ECS::TaskDefinition', 3);
     template.hasResourceProperties('AWS::ECS::Cluster', {
@@ -133,7 +133,7 @@ describe('ZeebeCluster', () => {
     // Prepare the stack for assertions.
     let template = Template.fromStack(clusterStack);
     template.resourceCountIs('AWS::EFS::FileSystem', 1);
-    template.resourceCountIs('AWS::EFS::MountTarget', 2);
+    template.resourceCountIs('AWS::EFS::MountTarget', 3);
     template.resourceCountIs('AWS::ECS::Service', 3);
     template.resourceCountIs('AWS::ECS::TaskDefinition', 3);
     template.hasResourceProperties('AWS::ECS::Cluster', {
@@ -174,7 +174,7 @@ describe('ZeebeCluster', () => {
     // Prepare the stack for assertions.
     let template = Template.fromStack(clusterStack);
     template.resourceCountIs('AWS::EFS::FileSystem', 1);
-    template.resourceCountIs('AWS::EFS::MountTarget', 2);
+    template.resourceCountIs('AWS::EFS::MountTarget', 3);
     template.resourceCountIs('AWS::ECS::Service', 3);
     template.resourceCountIs('AWS::ECS::TaskDefinition', 3);
     template.hasResourceProperties('AWS::ECS::Cluster', {
