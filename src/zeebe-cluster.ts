@@ -1,7 +1,6 @@
 import { RemovalPolicy } from 'aws-cdk-lib';
 import { ISecurityGroup, IVpc, Peer, Port, SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import {
-  CloudMapOptions,
   Cluster,
   ContainerImage,
   DeploymentControllerType,
@@ -15,6 +14,7 @@ import { FileSystem, PerformanceMode } from 'aws-cdk-lib/aws-efs';
 import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { DnsRecordType, PrivateDnsNamespace } from 'aws-cdk-lib/aws-servicediscovery';
 import { Construct } from 'constructs';
+import { ZeebeCdkUtls } from './utils';
 import { ZeebeClusterProps } from './zeebe-cluster-props';
 
 /**
@@ -29,7 +29,7 @@ export class ZeebeFargateCluster extends Construct {
   private ECS_CLUSTER_NAME: string = 'zeebe-cluster';
 
   private readonly props: ZeebeClusterProps;
-
+  private accessPointIds: Array<string> = [];
 
   /**
      * A construct to create a Camunda 8 cluster comprising of a number Zeebe brokers and gateways
@@ -48,7 +48,7 @@ export class ZeebeFargateCluster extends Construct {
 
   private initProps(options?: Partial<ZeebeClusterProps>): ZeebeClusterProps {
     const defaultVpc = Vpc.fromLookup(this, 'default-vpc', { isDefault: true });
-    const securityGroup = this.defaultSecurityGroup(defaultVpc);
+    const securityGroups = this.defaultSecurityGroups(defaultVpc);
     const ecsCluster = this.getCluster(defaultVpc);
     const defaultNs = new PrivateDnsNamespace(this, 'zeebe-default-ns', {
       name: 'zeebe-cluster.net',
@@ -56,7 +56,7 @@ export class ZeebeFargateCluster extends Construct {
       vpc: defaultVpc,
     });
     const defaultImage = ContainerImage.fromRegistry('camunda/zeebe:' + this.CAMUNDA_VERSION);
-    const defaultFileSystem = this.defaultZeebeEfs(defaultVpc, securityGroup);
+    const defaultFileSystem = this.defaultZeebeEfs(defaultVpc, securityGroups[1]);
 
     const defaults = {
       containerImage: defaultImage,
@@ -68,7 +68,7 @@ export class ZeebeFargateCluster extends Construct {
       namespace: defaultNs,
       numBrokerNodes: this.defaultNumberOfBrokers,
       numGatewayNodes: 1,
-      securityGroups: [securityGroup],
+      securityGroups: securityGroups,
       vpc: defaultVpc,
       fileSystem: defaultFileSystem,
       usePublicSubnets: true,
@@ -92,19 +92,44 @@ export class ZeebeFargateCluster extends Construct {
       securityGroup: sg,
     });
 
-    efs.addAccessPoint('data', { path: '/', posixUser: { uid: '1001', gid: '1001' } });
+    for (let i = 0; i < this.defaultNumberOfBrokers; i++) {
+      let ap = efs.addAccessPoint('broker-ap-' + i, {
+        path: '/broker-data-' + i,
+        createAcl: { //ACL with permissions is requried to allow access point create a folder on the EFS
+          ownerUid: '1001',
+          ownerGid: '1001',
+          permissions: '755',
+        },
+        posixUser: {
+          uid: '1001',
+          gid: '1001',
+        },
+      });
+      this.accessPointIds.push(ap.accessPointId);
+    }
+
     return efs;
   }
 
-  private defaultSecurityGroup(defaultVpc: IVpc): ISecurityGroup {
+  private defaultSecurityGroups(defaultVpc: IVpc): Array<ISecurityGroup> {
     let sg = new SecurityGroup(this, 'default-cluster-security-group', {
       vpc: defaultVpc,
       allowAllOutbound: true,
       securityGroupName: 'zeebe-cluster-sg',
     });
-    sg.addIngressRule(Peer.anyIpv4(), Port.tcpRange(26500, 26502), 'Zeebe Ports', false);
+    sg.addIngressRule(Peer.anyIpv4(), Port.tcp(9600), 'Zeebe Ports', false);
+    sg.addIngressRule(Peer.anyIpv4(), Port.tcpRange(26500, 26503), 'Zeebe Ports', false);
     sg.addIngressRule(Peer.anyIpv4(), Port.tcp(2049), 'EFS Ports', false);
-    return sg;
+
+    let efssg = new SecurityGroup(this, 'default-efs-security-group', {
+      vpc: defaultVpc,
+      allowAllOutbound: true,
+      securityGroupName: 'efs-sg',
+    });
+
+    efssg.addIngressRule(sg, Port.tcp(2049), 'EFS Ports', false);
+
+    return [sg, efssg];
   }
 
   private createGateway(): FargateService {
@@ -119,7 +144,11 @@ export class ZeebeFargateCluster extends Construct {
       securityGroups: this.props.securityGroups,
       vpcSubnets: { subnetType: SubnetType.PUBLIC },
       deploymentController: { type: DeploymentControllerType.ECS },
-      cloudMapOptions: this.configureCloudMap(),
+      cloudMapOptions: {
+        name: 'gateway',
+        dnsRecordType: DnsRecordType.A,
+        cloudMapNamespace: this.props.namespace,
+      },
       assignPublicIp: this.props.usePublicSubnets!,
     });
 
@@ -136,36 +165,26 @@ export class ZeebeFargateCluster extends Construct {
       maxHealthyPercent: 200,
       serviceName: 'zeebe-broker-' + id,
       taskDefinition: this.brokerTaskDefinition(id),
+
       securityGroups: this.props.securityGroups,
       vpcSubnets: { subnetType: this.props.usePublicSubnets == true ? SubnetType.PUBLIC : SubnetType.PRIVATE_WITH_NAT },
       assignPublicIp: this.props.usePublicSubnets!,
       deploymentController: { type: DeploymentControllerType.ECS },
-      cloudMapOptions: this.configureCloudMap(),
+      cloudMapOptions: {
+        name: 'zeebe-broker-' + id,
+        dnsRecordType: DnsRecordType.A,
+        cloudMapNamespace: this.props.namespace,
+      },
     });
 
     return fservice;
-  }
-
-
-  private createZeebeContactPoints(port: number): string {
-    var s = 'zeebe-broker-';
-
-    for (let i = 0; i < this.props.numBrokerNodes!; i++) {
-
-      s = s + '' + i + '.' + this.props.namespace?.namespaceName + ':' + port;
-
-      if (i < this.props.numBrokerNodes! - 1) {
-        s = s + ', ';
-      }
-    }
-    return s;
   }
 
   private gatewayTaskDefinition(): FargateTaskDefinition {
     let td = new FargateTaskDefinition(this, 'zeebe-gw-task-def', {
       cpu: this.props.cpu as number,
       memoryLimitMiB: this.props.memory as number,
-      family: 'zeebe',
+      family: 'zeebe-gateway',
     });
 
     td.addContainer('zeebe-gw', {
@@ -176,17 +195,16 @@ export class ZeebeFargateCluster extends Construct {
       essential: true,
       portMappings: [
         { containerPort: 26500, hostPort: 26500, protocol: Protocol.TCP },
+        { containerPort: 26502, hostPort: 26502, protocol: Protocol.TCP },
+        { containerPort: 26501, hostPort: 26501, protocol: Protocol.TCP },
+        { containerPort: 9600, hostPort: 9600, protocol: Protocol.TCP },
       ],
       environment: {
         JAVA_TOOL_OPTIONS: '-Xms512m -Xmx512m ',
         ZEEBE_STANDALONE_GATEWAY: 'true',
-        ZEEBE_GATEWAY_NETWORK_HOST: '0.0.0.0',
-        ZEEBE_GATEWAY_NETWORK_PORT: '26500',
-        ZEEBE_GATEWAY_CLUSTER_CONTACTPOINT: 'zeebe-broker-0.' + this.props.namespace?.namespaceName + ':26502',
-        ZEEBE_GATEWAY_CLUSTER_PORT: '26502',
-        ZEEBE_GATEWAY_CLUSTER_HOST: 'zeebe-gateway.' + this.props.namespace?.namespaceName,
         ZEEBE_BROKER_GATEWAY_ENABLE: 'true',
-        ATOMIX_LOG_LEVEL: 'DEBUG',
+        ZEEBE_GATEWAY_CLUSTER_CONTACTPOINT: 'zeebe-broker-0.' + this.props.namespace?.namespaceName + ':26502',
+        ATOMIX_LOG_LEVEL: 'TRACE',
       },
       logging: LogDriver.awsLogs({
         logGroup: new LogGroup(this, 'zeebe-gw-logs', {
@@ -209,26 +227,26 @@ export class ZeebeFargateCluster extends Construct {
     });
   }
 
-  private configureCloudMap(): CloudMapOptions {
-    return {
-      name: 'gateway',
-      dnsRecordType: DnsRecordType.A,
-      cloudMapNamespace: this.props.namespace,
-    };
-  }
-
   private brokerTaskDefinition(id: number) {
+
+    let utils = new ZeebeCdkUtls();
 
     let td = new FargateTaskDefinition(this, 'zeebe-broker-task-def-' + id, {
       cpu: this.props.cpu,
       memoryLimitMiB: this.props?.memory,
-      family: 'zeebe',
+      family: 'zeebe-broker-' + id,
     });
     td.applyRemovalPolicy(RemovalPolicy.DESTROY);
 
     td.addVolume({
       name: 'zeebe-data-volume-' + id,
-      efsVolumeConfiguration: { fileSystemId: 'EFS' },
+      efsVolumeConfiguration: {
+        fileSystemId: this.props!.fileSystem!.fileSystemId,
+        transitEncryption: 'ENABLED',
+        authorizationConfig: {
+          accessPointId: this.accessPointIds[id],
+        },
+      },
     });
 
 
@@ -241,6 +259,7 @@ export class ZeebeFargateCluster extends Construct {
         { containerPort: 26500, hostPort: 26500, protocol: Protocol.TCP },
         { containerPort: 26501, hostPort: 26501, protocol: Protocol.TCP },
         { containerPort: 26502, hostPort: 26502, protocol: Protocol.TCP },
+        { containerPort: 9600, hostPort: 9600, protocol: Protocol.TCP },
       ],
       environment: {
         JAVA_TOOL_OPTIONS: '-Xms512m -Xmx512m ',
@@ -248,22 +267,23 @@ export class ZeebeFargateCluster extends Construct {
         ZEEBE_BROKER_DATA_DISKUSAGECOMMANDWATERMARK: '0.998',
         ZEEBE_BROKER_DATA_DISKUSAGEREPLICATIONWATERMARK: '0.999',
         ZEEBE_BROKER_NETWORK_HOST: '0.0.0.0',
-        ZEEBE_BROKER_CLUSTER_PARTITIONSCOUNT: '2',
-        ZEEBE_BROKER_CLUSTER_REPLICATIONFACTOR: '3',
+        ZEEBE_BROKER_CLUSTER_PARTITIONSCOUNT: '' + this.props.numBrokerNodes,
+        ZEEBE_BROKER_CLUSTER_REPLICATIONFACTOR: '' + this.props.numBrokerNodes,
         ZEEBE_BROKER_CLUSTER_CLUSTERSIZE: '' + this.props.numBrokerNodes,
-        ZEEBE_GATEWAY_CLUSTER_CONTACTPOINT: this.createZeebeContactPoints(26502),
+        ZEEBE_BROKER_CLUSTER_INITIALCONTACTPOINTS:
+                    utils.createZeebeContactPoints(26502, this.props.namespace!.namespaceName, this.props.numBrokerNodes!),
         ZEEBE_BROKER_GATEWAY_ENABLE: 'false',
         ZEEBE_LOG_LEVEL: 'DEBUG',
         ZEEBE_DEBUG: 'true',
-        ATOMIX_LOG_LEVEL: 'DEBUG',
+        ATOMIX_LOG_LEVEL: 'TRACE',
       },
       logging: LogDriver.awsLogs({
         logGroup: new LogGroup(this, 'zeebe-broker-' + id + '-logs', {
-          logGroupName: '/ecs/zeebe-gateway',
+          logGroupName: '/ecs/zeebe-broker' + id,
           removalPolicy: RemovalPolicy.DESTROY,
           retention: RetentionDays.ONE_MONTH,
         }),
-        streamPrefix: 'zeebe-broker-' + id,
+        streamPrefix: 'broker-' + id,
       }),
     });
 
