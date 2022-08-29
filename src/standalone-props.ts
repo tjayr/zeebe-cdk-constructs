@@ -89,9 +89,11 @@ export interface ZeebeStandaloneProps extends GlobalProps {
   readonly zeebeEnvironmentVars?: any;
 
   /**
-     * Deploy the zeebe instance into a public subnet so that it can be accessed remotely with an ip address
+     * Use this property to control the placement of the Zeebe gateway instance in either a public or private subnet within the VPC.
      *
-     * The default is true
+     * If placed in a private subnet, a VPN or SSH tunnel will be needed to connect to the Gateway.
+     *
+     * Defaults to true.
      */
-  readonly usePublicSubnets?: boolean;
+  readonly publicGateway?: boolean;
 }

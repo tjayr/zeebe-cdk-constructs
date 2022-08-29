@@ -29,8 +29,8 @@ export class ZeebeStandaloneFargateCluster extends Construct {
   private props: ZeebeStandaloneProps;
 
   /**
-   * A construct to creates a single standalone Zeebe node that is both gateway and broker deployed on AWS ECS Fargate
-   */
+     * A construct to creates a single standalone Zeebe node that is both gateway and broker deployed on AWS ECS Fargate
+     */
   constructor(scope: Construct, id: string, zeebeProperties: ZeebeStandaloneProps) {
     super(scope, id);
     this.props = this.initProps(zeebeProperties);
@@ -67,8 +67,6 @@ export class ZeebeStandaloneFargateCluster extends Construct {
         ATOMIX_LOG_LEVEL: 'DEBUG',
         ZEEBE_BROKER_DATA_DISKUSAGECOMMANDWATERMARK: '0.998',
         ZEEBE_BROKER_DATA_DISKUSAGEREPLICATIONWATERMARK: '0.999',
-        ZEEBE_GATEWAY_NETWORK_HOST: '0.0.0.0',
-        ZEEBE_GATEWAY_NETWORK_PORT: '26500',
       },
       containerImage: ContainerImage.fromRegistry('camunda/zeebe:' + this.CAMUNDA_VERSION),
     };
@@ -91,7 +89,7 @@ export class ZeebeStandaloneFargateCluster extends Construct {
 
   private createStandaloneBroker(): FargateService {
 
-    let fservice = new FargateService(this, 'zeebe-standalone', {
+    let fservice = new FargateService(this, 'zeebe-standalone-service', {
       cluster: this.props.ecsCluster!,
       desiredCount: 1,
       minHealthyPercent: 100,
@@ -99,9 +97,9 @@ export class ZeebeStandaloneFargateCluster extends Construct {
       serviceName: 'zeebe-standalone',
       taskDefinition: this.standaloneTaskDefinition(),
       securityGroups: this.props.securityGroups,
-      assignPublicIp: this.props.usePublicSubnets,
+      assignPublicIp: this.props.publicGateway,
       vpcSubnets: {
-        subnetType: this.props.usePublicSubnets == true ? SubnetType.PUBLIC : SubnetType.PRIVATE_WITH_NAT,
+        subnetType: this.props.publicGateway == true ? SubnetType.PUBLIC : SubnetType.PRIVATE_WITH_NAT,
       },
       deploymentController: { type: DeploymentControllerType.ECS },
       cloudMapOptions: this.configureCloudMap(),
@@ -114,7 +112,7 @@ export class ZeebeStandaloneFargateCluster extends Construct {
     let td = new FargateTaskDefinition(this, 'zeebe-standalone-task-def', {
       cpu: this.props.cpu!,
       memoryLimitMiB: this.props.memory!,
-      family: 'zeebe',
+      family: 'zeebe-standalone',
     });
 
     td.applyRemovalPolicy(RemovalPolicy.DESTROY);

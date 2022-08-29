@@ -171,7 +171,7 @@ export class ZeebeFargateCluster extends Construct {
         dnsRecordType: DnsRecordType.A,
         cloudMapNamespace: this.props.namespace,
       },
-      assignPublicIp: this.props.usePublicSubnets!,
+      assignPublicIp: this.props.publicGateway!,
     });
 
     return fservice;
@@ -226,7 +226,6 @@ export class ZeebeFargateCluster extends Construct {
         ZEEBE_STANDALONE_GATEWAY: 'true',
         ZEEBE_BROKER_GATEWAY_ENABLE: 'true',
         ZEEBE_GATEWAY_CLUSTER_CONTACTPOINT: 'zeebe-broker-0.' + this.props.namespace?.namespaceName + ':26502',
-        ATOMIX_LOG_LEVEL: 'TRACE',
       },
       logging: LogDriver.awsLogs({
         logGroup: new LogGroup(this, 'zeebe-gw-logs', {
@@ -294,9 +293,8 @@ export class ZeebeFargateCluster extends Construct {
         ZEEBE_BROKER_CLUSTER_INITIALCONTACTPOINTS:
                     utils.createZeebeContactPoints(26502, this.props.namespace!.namespaceName, this.props.numBrokerNodes!),
         ZEEBE_BROKER_GATEWAY_ENABLE: 'false',
-        ZEEBE_LOG_LEVEL: 'DEBUG',
+        ZEEBE_LOG_LEVEL: 'INFO',
         ZEEBE_DEBUG: 'true',
-        ATOMIX_LOG_LEVEL: 'TRACE',
       },
       logging: LogDriver.awsLogs({
         logGroup: new LogGroup(this, 'zeebe-broker-' + id + '-logs', {
