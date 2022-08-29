@@ -1,7 +1,6 @@
 import { RemovalPolicy } from 'aws-cdk-lib';
 import { ISecurityGroup, IVpc, Peer, Port, SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import {
-  CloudMapOptions,
   Cluster,
   ContainerImage,
   DeploymentControllerType,
@@ -18,7 +17,7 @@ import { Construct } from 'constructs';
 import { ZeebeStandaloneProps } from './standalone-props';
 
 /**
- * A construct to creates a single standalone Zeebe node that is both gateway and broker deployed on AWS ECS Fargate
+ * A construct to create a single standalone Zeebe container (gateway and broker) deployed on AWS Fargate
  */
 export class ZeebeStandaloneFargateCluster extends Construct {
 
@@ -29,12 +28,11 @@ export class ZeebeStandaloneFargateCluster extends Construct {
   private props: ZeebeStandaloneProps;
 
   /**
-     * A construct to creates a single standalone Zeebe node that is both gateway and broker deployed on AWS ECS Fargate
+     * A construct to creates a single standalone Zeebe node that is both gateway and broker deployed on AWS Fargate
      */
   constructor(scope: Construct, id: string, zeebeProperties: ZeebeStandaloneProps) {
     super(scope, id);
     this.props = this.initProps(zeebeProperties);
-
     this.createStandaloneBroker();
   }
 
@@ -42,17 +40,12 @@ export class ZeebeStandaloneFargateCluster extends Construct {
     const defaultVpc = Vpc.fromLookup(this, 'default-vpc', { isDefault: true });
     const securityGroups = this.defaultSecurityGroups(defaultVpc);
     const ecsCluster = this.getCluster(defaultVpc);
-    const defaultNs = new PrivateDnsNamespace(this, 'zeebe-default-ns', {
-      name: 'zeebe-cluster.net',
-      description: 'Zeebe Cluster Namespace',
-      vpc: defaultVpc,
-    });
 
     const defaults = {
       cpu: 512,
       ecsCluster: ecsCluster,
       memory: 1024,
-      namespace: defaultNs,
+      namespace: undefined,
       securityGroups: securityGroups,
       vpc: defaultVpc,
       fileSystem: undefined,
@@ -83,7 +76,7 @@ export class ZeebeStandaloneFargateCluster extends Construct {
       allowAllOutbound: true,
       securityGroupName: 'zeebe-standalone-sg',
     });
-    sg.addIngressRule(Peer.anyIpv4(), Port.tcpRange(26500, 26502), '', false);
+    sg.addIngressRule(Peer.anyIpv4(), Port.tcpRange(26500, 26502), 'Zeebe Ports', false);
     return [sg];
   }
 
@@ -102,8 +95,22 @@ export class ZeebeStandaloneFargateCluster extends Construct {
         subnetType: this.props.publicGateway == true ? SubnetType.PUBLIC : SubnetType.PRIVATE_WITH_NAT,
       },
       deploymentController: { type: DeploymentControllerType.ECS },
-      cloudMapOptions: this.configureCloudMap(),
     });
+
+    if (this.props.namespace != undefined) {
+
+      const ns = new PrivateDnsNamespace(this, 'zeebe-default-ns', {
+        name: 'zeebe-cluster.net',
+        description: 'Zeebe Cluster Namespace',
+        vpc: this.props.vpc!,
+      });
+
+      fservice.enableCloudMap({
+        name: 'zeebe-standalone',
+        dnsRecordType: DnsRecordType.A,
+        cloudMapNamespace: ns,
+      });
+    }
 
     return fservice;
   }
@@ -172,14 +179,6 @@ export class ZeebeStandaloneFargateCluster extends Construct {
       clusterName: this.ECS_CLUSTER_NAME,
       vpc: defaultVpc,
     });
-  }
-
-  private configureCloudMap(): CloudMapOptions {
-    return {
-      name: 'zeebe-standalone',
-      dnsRecordType: DnsRecordType.A,
-      cloudMapNamespace: this.props.namespace,
-    };
   }
 
 }

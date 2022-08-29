@@ -18,9 +18,7 @@ import { ZeebeCdkUtls } from './utils';
 import { ZeebeClusterProps } from './zeebe-cluster-props';
 
 /**
- * A construct to create a Camunda 8 cluster comprising of a number Zeebe brokers and gateways
- * deployed on AWS ECS Fargate.
- *
+ * A construct to create a Zeebe cluster on AWS Fargate.
  */
 export class ZeebeFargateCluster extends Construct {
 
@@ -33,9 +31,11 @@ export class ZeebeFargateCluster extends Construct {
 
 
   /**
-     * A construct to create a Camunda 8 cluster comprising of a number Zeebe brokers and gateways
-     * deployed on AWS ECS Fargate.
+     * A construct to create a Zeebe cluster on AWS Fargate
      *
+     * @param scope CDK scope
+     * @param id CDK id
+     * @param zeebeProperties Zeebe cluster properties
      */
   constructor(scope: Construct, id: string, zeebeProperties: ZeebeClusterProps) {
     super(scope, id);

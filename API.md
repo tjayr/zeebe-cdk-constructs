@@ -4,7 +4,7 @@
 
 ### ZeebeFargateCluster <a name="ZeebeFargateCluster" id="zeebe-cdk-constructs.ZeebeFargateCluster"></a>
 
-A construct to create a Camunda 8 cluster comprising of a number Zeebe brokers and gateways deployed on AWS ECS Fargate.
+A construct to create a Zeebe cluster on AWS Fargate.
 
 #### Initializers <a name="Initializers" id="zeebe-cdk-constructs.ZeebeFargateCluster.Initializer"></a>
 
@@ -16,9 +16,9 @@ new ZeebeFargateCluster(scope: Construct, id: string, zeebeProperties: ZeebeClus
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#zeebe-cdk-constructs.ZeebeFargateCluster.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
-| <code><a href="#zeebe-cdk-constructs.ZeebeFargateCluster.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#zeebe-cdk-constructs.ZeebeFargateCluster.Initializer.parameter.zeebeProperties">zeebeProperties</a></code> | <code><a href="#zeebe-cdk-constructs.ZeebeClusterProps">ZeebeClusterProps</a></code> | *No description.* |
+| <code><a href="#zeebe-cdk-constructs.ZeebeFargateCluster.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | CDK scope. |
+| <code><a href="#zeebe-cdk-constructs.ZeebeFargateCluster.Initializer.parameter.id">id</a></code> | <code>string</code> | CDK id. |
+| <code><a href="#zeebe-cdk-constructs.ZeebeFargateCluster.Initializer.parameter.zeebeProperties">zeebeProperties</a></code> | <code><a href="#zeebe-cdk-constructs.ZeebeClusterProps">ZeebeClusterProps</a></code> | Zeebe cluster properties. |
 
 ---
 
@@ -26,17 +26,23 @@ new ZeebeFargateCluster(scope: Construct, id: string, zeebeProperties: ZeebeClus
 
 - *Type:* constructs.Construct
 
+CDK scope.
+
 ---
 
 ##### `id`<sup>Required</sup> <a name="id" id="zeebe-cdk-constructs.ZeebeFargateCluster.Initializer.parameter.id"></a>
 
 - *Type:* string
 
+CDK id.
+
 ---
 
 ##### `zeebeProperties`<sup>Required</sup> <a name="zeebeProperties" id="zeebe-cdk-constructs.ZeebeFargateCluster.Initializer.parameter.zeebeProperties"></a>
 
 - *Type:* <a href="#zeebe-cdk-constructs.ZeebeClusterProps">ZeebeClusterProps</a>
+
+Zeebe cluster properties.
 
 ---
 
@@ -105,7 +111,7 @@ The tree node.
 
 ### ZeebeStandaloneFargateCluster <a name="ZeebeStandaloneFargateCluster" id="zeebe-cdk-constructs.ZeebeStandaloneFargateCluster"></a>
 
-A construct to creates a single standalone Zeebe node that is both gateway and broker deployed on AWS ECS Fargate.
+A construct to create a single standalone Zeebe container (gateway and broker) deployed on AWS Fargate.
 
 #### Initializers <a name="Initializers" id="zeebe-cdk-constructs.ZeebeStandaloneFargateCluster.Initializer"></a>
 
@@ -320,10 +326,8 @@ public readonly fileSystem: FileSystem;
 
 An elastic file system to store Zeebe broker data.
 
-If not specified the brokers will use ephemeral
-Fargate local storage and data will be lost when a node is restarted.
-
-Default value is 3
+If not specified the brokers will use ephemeral Fargate local
+storage and data will be lost when a node is restarted.
 
 ---
 
@@ -422,9 +426,7 @@ public readonly publicGateway: boolean;
 
 Use this property to control the placement of the Zeebe gateway instance in either a public or private subnet within the VPC.
 
-If placed in a private subnet, a VPN or SSH tunnel will be needed to connect to the Gateway.
-
-Defaults to true.
+If placed in a private subnet, a VPN or SSH tunnel will be needed to connect to the Gateway. Defaults to true.
 
 ---
 
@@ -450,7 +452,7 @@ public readonly vpc: IVpc;
 
 The VPC that the cluster will be created in.
 
-If not specified, the cluster will be created in the default VPC
+If not specified a new VPC will be created using CIDR 10.0.0.0/16
 
 ---
 
@@ -534,10 +536,8 @@ public readonly fileSystem: FileSystem;
 
 An elastic file system to store Zeebe broker data.
 
-If not specified the brokers will use ephemeral
-Fargate local storage and data will be lost when a node is restarted.
-
-Default value is 3
+If not specified ephemeral
+Fargate storage will be used and data will be lost when a node is restarted/destroyed.
 
 ---
 
@@ -636,23 +636,17 @@ public readonly zeebeEnvironmentVars: any;
 
 Override the environment variables passed to the Zeebe container.
 
-The default values are as follows
+If not specified, then the following default environment is passed to the zeebe container
 
   ```ts
-  environment: {
-     JAVA_TOOL_OPTIONS: '-Xms512m -Xmx512m ',
-     ZEEBE_STANDALONE_GATEWAY: 'true',
-     ZEEBE_BROKER_GATEWAY_ENABLE: 'true',
-     ATOMIX_LOG_LEVEL: 'DEBUG',
-     ZEEBE_BROKER_DATA_DISKUSAGECOMMANDWATERMARK: '0.998',
-     ZEEBE_BROKER_DATA_DISKUSAGEREPLICATIONWATERMARK: '0.999',
-     ZEEBE_BROKER_EXPORTERS_HAZELCAST_CLASSNAME:	'io.zeebe.hazelcast.exporter.HazelcastExporter',
-     ZEEBE_BROKER_EXPORTERS_HAZELCAST_JARPATH: 'exporters/zeebe-hazelcast-exporter.jar',
-     ZEEBE_GATEWAY_NETWORK_HOST:	'0.0.0.0',
-     ZEEBE_GATEWAY_NETWORK_PORT:	'26500'
-   },
+{
+  JAVA_TOOL_OPTIONS: '-Xms512m -Xmx512m ',
+  ATOMIX_LOG_LEVEL: 'DEBUG',
+  ZEEBE_BROKER_DATA_DISKUSAGECOMMANDWATERMARK: '0.998',
+  ZEEBE_BROKER_DATA_DISKUSAGEREPLICATIONWATERMARK: '0.999'
+}
 
-  * ```
+```
 
 ---
 
