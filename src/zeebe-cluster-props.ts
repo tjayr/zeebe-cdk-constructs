@@ -1,8 +1,8 @@
-import {ISecurityGroup, IVpc} from 'aws-cdk-lib/aws-ec2';
-import {ICluster} from 'aws-cdk-lib/aws-ecs';
-import {FileSystem} from 'aws-cdk-lib/aws-efs';
-import {INamespace} from 'aws-cdk-lib/aws-servicediscovery';
-import {GlobalProps} from './global-props';
+import { ISecurityGroup, IVpc } from 'aws-cdk-lib/aws-ec2';
+import { ICluster } from 'aws-cdk-lib/aws-ecs';
+import { FileSystem } from 'aws-cdk-lib/aws-efs';
+import { INamespace } from 'aws-cdk-lib/aws-servicediscovery';
+import { GlobalProps } from './global-props';
 
 export interface ZeebeClusterProps extends GlobalProps {
 
