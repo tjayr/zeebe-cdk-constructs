@@ -1,8 +1,8 @@
-import { ISecurityGroup, IVpc } from 'aws-cdk-lib/aws-ec2';
-import { ICluster } from 'aws-cdk-lib/aws-ecs';
-import { FileSystem } from 'aws-cdk-lib/aws-efs';
-import { INamespace } from 'aws-cdk-lib/aws-servicediscovery';
-import { GlobalProps } from './global-props';
+import {ISecurityGroup, IVpc} from 'aws-cdk-lib/aws-ec2';
+import {ICluster} from 'aws-cdk-lib/aws-ecs';
+import {FileSystem} from 'aws-cdk-lib/aws-efs';
+import {INamespace} from 'aws-cdk-lib/aws-servicediscovery';
+import {GlobalProps} from './global-props';
 
 export interface ZeebeClusterProps extends GlobalProps {
 
@@ -83,10 +83,12 @@ export interface ZeebeClusterProps extends GlobalProps {
   readonly gatewayMemory?: number;
 
   /**
-   * Create the Zeebe brokers in a public subnet. If false the Zeebe brokers will be created in a private subnet (with NAT).
+   * Use this property to control the placement of the Zeebe gateway instance in either a public or private subnet within the VPC.
+   *
+   * If placed in a private subnet, a VPN or SSH tunnel will be needed to connect to the Gateway.
    *
    * Defaults to true.
    */
-  readonly usePublicSubnets?: boolean;
+  readonly publicGateway?: boolean;
 
 }
