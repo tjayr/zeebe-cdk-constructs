@@ -48,10 +48,9 @@ export interface ZeebeStandaloneProps extends GlobalProps {
   readonly ecsCluster?: ICluster;
 
   /**
-     * An elastic file system to store Zeebe broker data. If not specified the brokers will use ephemeral
-     * Fargate local storage and data will be lost when a node is restarted.
+     * An elastic file system to store Zeebe broker data. If not specified ephemeral
+     * Fargate storage will be used and data will be lost when a node is restarted/destroyed.
      *
-     * Default value is 3
      */
   readonly fileSystem?: FileSystem;
 
@@ -66,25 +65,17 @@ export interface ZeebeStandaloneProps extends GlobalProps {
   /**
      * Override the environment variables passed to the Zeebe container.
      *
-     * The default values are as follows
+     * If not specified, then the following default environment is passed to the zeebe container
      *
      *  ```ts
-     *  environment: {
-     *     JAVA_TOOL_OPTIONS: '-Xms512m -Xmx512m ',
-     *     ZEEBE_STANDALONE_GATEWAY: 'true',
-     *     ZEEBE_BROKER_GATEWAY_ENABLE: 'true',
-     *     ATOMIX_LOG_LEVEL: 'DEBUG',
-     *     ZEEBE_BROKER_DATA_DISKUSAGECOMMANDWATERMARK: '0.998',
-     *     ZEEBE_BROKER_DATA_DISKUSAGEREPLICATIONWATERMARK: '0.999',
-     *     ZEEBE_BROKER_EXPORTERS_HAZELCAST_CLASSNAME:	'io.zeebe.hazelcast.exporter.HazelcastExporter',
-     *     ZEEBE_BROKER_EXPORTERS_HAZELCAST_JARPATH: 'exporters/zeebe-hazelcast-exporter.jar',
-     *     ZEEBE_GATEWAY_NETWORK_HOST:	'0.0.0.0',
-     *     ZEEBE_GATEWAY_NETWORK_PORT:	'26500'
-     *   },
+     * {
+     *  JAVA_TOOL_OPTIONS: '-Xms512m -Xmx512m ',
+     *  ATOMIX_LOG_LEVEL: 'DEBUG',
+     *  ZEEBE_BROKER_DATA_DISKUSAGECOMMANDWATERMARK: '0.998',
+     *  ZEEBE_BROKER_DATA_DISKUSAGEREPLICATIONWATERMARK: '0.999'
+     * }
      *
-     *  * ```
-     *
-     *
+     * ```
      */
   readonly zeebeEnvironmentVars?: any;
 
