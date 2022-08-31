@@ -19,6 +19,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
   releaseBranches: 'main',
   releaseToNpm: true,
   releaseWorkflow: true,
+
   //releaseTrigger: ReleaseTrigger.manual(),
 
   // publishToMaven: {
@@ -42,6 +43,15 @@ const project = new awscdk.AwsCdkConstructLibrary({
       semanticTitle: true,
     },
   },
+
+  workflowBootstrapSteps: [{
+    name: 'env_setup',
+    run: 'echo Set environment varsexport CDK_DEFAULT_ACCOUNT=eu-west-1',
+    env: {
+      CDK_DEFAULT_ACCOUNT: '${{secrets.CDK_DEFAULT_ACCOUNT}}',
+      CDK_DEFAULT_REGION: 'eu-west-1',
+    },
+  }],
 });
 
 

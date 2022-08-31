@@ -24,6 +24,11 @@ jobs:
         run: |-
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
+      - name: env_setup
+        run: echo Set environment varsexport CDK_DEFAULT_ACCOUNT=eu-west-1
+        env:
+          CDK_DEFAULT_ACCOUNT: ${{secrets.CDK_DEFAULT_ACCOUNT}}
+          CDK_DEFAULT_REGION: eu-west-1
       - name: Install dependencies
         run: yarn install --check-files --frozen-lockfile
       - name: release:2
