@@ -37,6 +37,11 @@ junit.xml
 /coverage/
 /dist/changelog.md
 /dist/version.txt
+!/.github/workflows/release.yml
+!/.github/workflows/release-0.yml
+!/.github/workflows/release-1.yml
+!/.github/workflows/release-2.yml
+!/.github/workflows/release-3.yml
 !/.github/workflows/upgrade-main.yml
 !/.github/workflows/upgrade-0.yml
 !/.github/workflows/upgrade-1.yml
