@@ -30,6 +30,7 @@
     "jest-junit",
     "jest",
     "npm-check-updates",
+    "standard-version",
     "ts-jest",
     "aws-cdk-lib",
     "constructs",

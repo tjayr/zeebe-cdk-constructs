@@ -35,7 +35,13 @@ jspm_packages/
 /test-reports/
 junit.xml
 /coverage/
-!/.github/workflows/upgrade.yml
+/dist/changelog.md
+/dist/version.txt
+!/.github/workflows/upgrade-main.yml
+!/.github/workflows/upgrade-0.yml
+!/.github/workflows/upgrade-1.yml
+!/.github/workflows/upgrade-2.yml
+!/.github/workflows/upgrade-3.yml
 !/.github/pull_request_template.md
 !/test/
 !/tsconfig.dev.json

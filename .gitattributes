@@ -5,7 +5,11 @@
 /.gitattributes linguist-generated
 /.github/pull_request_template.md linguist-generated
 /.github/workflows/pull-request-lint.yml linguist-generated
-/.github/workflows/upgrade.yml linguist-generated
+/.github/workflows/upgrade-0.yml linguist-generated
+/.github/workflows/upgrade-1.yml linguist-generated
+/.github/workflows/upgrade-2.yml linguist-generated
+/.github/workflows/upgrade-3.yml linguist-generated
+/.github/workflows/upgrade-main.yml linguist-generated
 /.gitignore linguist-generated
 /.npmignore linguist-generated
 /.projen/** linguist-generated
