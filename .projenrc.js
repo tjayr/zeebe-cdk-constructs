@@ -10,7 +10,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
   gitignore: ['.idea'],
   keywords: ['cdk', 'aws-cdk', 'awscdk', 'camunda', 'zeebe'],
   stability: 'experimental',
-    majorVersion: '0',
+  majorVersion: '0',
 
   // deps: [],                /* Runtime dependencies of this module. */
   // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
@@ -41,8 +41,8 @@ const project = new awscdk.AwsCdkConstructLibrary({
         types: ['chore', 'feat', 'fix', 'ci', 'docs', 'build', 'style', 'refactor', 'perf', 'test'],
       },
       semanticTitle: true,
-        }
-    }
+    },
+  },
 
 });
 

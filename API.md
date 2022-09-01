@@ -471,6 +471,7 @@ const zeebeStandaloneProps: ZeebeStandaloneProps = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.containerImage">containerImage</a></code> | <code>aws-cdk-lib.aws_ecs.ContainerImage</code> | Using this property you can specify a custom container image from a custom registry. |
+| <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.vpc">vpc</a></code> | <code>aws-cdk-lib.aws_ec2.IVpc</code> | The VPC that the cluster will be created in. |
 | <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.cpu">cpu</a></code> | <code>number</code> | The amount of cpu to assign to the broker task. |
 | <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.ecsCluster">ecsCluster</a></code> | <code>aws-cdk-lib.aws_ecs.ICluster</code> | The ECS cluster to create the Zeebe nodes in. |
 | <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.fileSystem">fileSystem</a></code> | <code>aws-cdk-lib.aws_efs.FileSystem</code> | An elastic file system to store Zeebe broker data. |
@@ -482,7 +483,6 @@ const zeebeStandaloneProps: ZeebeStandaloneProps = { ... }
 | <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.securityGroups">securityGroups</a></code> | <code>aws-cdk-lib.aws_ec2.ISecurityGroup[]</code> | The security groups to assign to the cluster. |
 | <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.simpleMonitor">simpleMonitor</a></code> | <code>boolean</code> | Set to true to deploy the simple monitor instance along side the Zeebe instance to allow monitoring of processes. |
 | <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.useNamespace">useNamespace</a></code> | <code>boolean</code> | If true, then DNS hostnames will be registered in a Cloud Map to allow for service discovery. |
-| <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.vpc">vpc</a></code> | <code>aws-cdk-lib.aws_ec2.IVpc</code> | The VPC that the cluster will be created in. |
 | <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.zeebeEnvironmentVars">zeebeEnvironmentVars</a></code> | <code>any</code> | Override the environment variables passed to the Zeebe container. |
 
 ---
@@ -498,6 +498,18 @@ public readonly containerImage: ContainerImage;
 Using this property you can specify a custom container image from a custom registry.
 
 Defaults to camunda/zeebe:latest from Docker hub if not set.
+
+---
+
+##### `vpc`<sup>Required</sup> <a name="vpc" id="zeebe-cdk-constructs.ZeebeStandaloneProps.property.vpc"></a>
+
+```typescript
+public readonly vpc: IVpc;
+```
+
+- *Type:* aws-cdk-lib.aws_ec2.IVpc
+
+The VPC that the cluster will be created in.
 
 ---
 
@@ -655,20 +667,6 @@ If true, then DNS hostnames will be registered in a Cloud Map to allow for servi
 If this value is true and a namespace is not provided then a default private name space called zeebe-cluster.net will be created.
 
 Default is false
-
----
-
-##### `vpc`<sup>Optional</sup> <a name="vpc" id="zeebe-cdk-constructs.ZeebeStandaloneProps.property.vpc"></a>
-
-```typescript
-public readonly vpc: IVpc;
-```
-
-- *Type:* aws-cdk-lib.aws_ec2.IVpc
-
-The VPC that the cluster will be created in.
-
-If not specified, the cluster will be created in the default VPC
 
 ---
 
