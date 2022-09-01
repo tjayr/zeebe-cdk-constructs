@@ -33,7 +33,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
   },
   docgen: true,
   dependabot: false,
-  release: true,
+  release: false,
   buildWorkflow: false,
   githubOptions: {
     pullRequestLintOptions: {
