@@ -9,7 +9,7 @@ subnet on AWS default VPC EFS file system is mounted for Zeebe storage /usr/data
 
 With the default configuration settings, the following infrastructure will be created on AWS:
 
-* Default VPC will be used
+* A vpc is required - Default VPC will be used
 * ECS Cluster - zeebe-standalone
 * 1 Zeebe gateway/broker in a public subnet (Public IP4)
 * Zeebe node is configured as a Fargate task definition and service
@@ -26,11 +26,12 @@ export class ZeebeStandaloneFargateStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
 
+        let vpc = Vpc.fromLookup(this, 'my-vpc', {isDefault: true})
+
         new ZeebeStandaloneFargateCluster(this, 'ZeebeStandalone', {
+            vpc: vpc
             // Optional - EFS for persistent storage
-            // fileSystem: new FileSystem(this, 'zeebe-efs', { 
-            //     vpc: Vpc.fromLookup(this, 'my-vpc', {vpcId: 'abcxyz'})
-            // });    
+            // fileSystem: new FileSystem(this, 'zeebe-efs', { vpc: vpc });
         });
     }
 }

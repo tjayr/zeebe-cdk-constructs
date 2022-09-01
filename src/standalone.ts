@@ -1,5 +1,5 @@
 import { RemovalPolicy } from 'aws-cdk-lib';
-import { ISecurityGroup, IVpc, Peer, Port, SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { ISecurityGroup, IVpc, Peer, Port, SecurityGroup, SubnetType } from 'aws-cdk-lib/aws-ec2';
 import {
   Cluster,
   ContainerImage,
@@ -37,18 +37,17 @@ export class ZeebeStandaloneFargateCluster extends Construct {
   }
 
   private initProps(options?: Partial<ZeebeStandaloneProps>): ZeebeStandaloneProps {
-    const defaultVpc = Vpc.fromLookup(this, 'default-vpc', { isDefault: true });
-    const securityGroups = this.defaultSecurityGroups(defaultVpc);
-    const ecsCluster = this.getCluster(defaultVpc);
+    const securityGroups = this.defaultSecurityGroups(options?.vpc!);
+    const ecsCluster = this.getCluster(options?.vpc!);
 
     const defaults = {
+      vpc: options?.vpc!,
       cpu: 512,
       ecsCluster: ecsCluster,
       memory: 1024,
       useNamespace: false,
       namespace: undefined,
       securityGroups: securityGroups,
-      vpc: defaultVpc,
       fileSystem: undefined,
       usePublicSubnets: true,
       portMappings: [
