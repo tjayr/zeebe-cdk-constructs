@@ -474,11 +474,14 @@ const zeebeStandaloneProps: ZeebeStandaloneProps = { ... }
 | <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.cpu">cpu</a></code> | <code>number</code> | The amount of cpu to assign to the broker task. |
 | <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.ecsCluster">ecsCluster</a></code> | <code>aws-cdk-lib.aws_ecs.ICluster</code> | The ECS cluster to create the Zeebe nodes in. |
 | <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.fileSystem">fileSystem</a></code> | <code>aws-cdk-lib.aws_efs.FileSystem</code> | An elastic file system to store Zeebe broker data. |
+| <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.hazelcastExporter">hazelcastExporter</a></code> | <code>boolean</code> | Set to true to enable hazelcast exporter on the Zeebe image. |
 | <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.memory">memory</a></code> | <code>number</code> | The amount of memory to assign to the broker task. |
-| <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.namespace">namespace</a></code> | <code>aws-cdk-lib.aws_servicediscovery.INamespace</code> | A CloudMap private name space to be used for service discover. |
+| <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.namespace">namespace</a></code> | <code>aws-cdk-lib.aws_servicediscovery.INamespace</code> | If specifying a custom namespace, also set useNamespace to true. |
 | <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.portMappings">portMappings</a></code> | <code>aws-cdk-lib.aws_ecs.PortMapping[]</code> | Override the port mappings of the container. |
 | <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.publicGateway">publicGateway</a></code> | <code>boolean</code> | Use this property to control the placement of the Zeebe gateway instance in either a public or private subnet within the VPC. |
 | <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.securityGroups">securityGroups</a></code> | <code>aws-cdk-lib.aws_ec2.ISecurityGroup[]</code> | The security groups to assign to the cluster. |
+| <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.simpleMonitor">simpleMonitor</a></code> | <code>boolean</code> | Set to true to deploy the simple monitor instance along side the Zeebe instance to allow monitoring of processes. |
+| <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.useNamespace">useNamespace</a></code> | <code>boolean</code> | If true, then DNS hostnames will be registered in a Cloud Map to allow for service discovery. |
 | <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.vpc">vpc</a></code> | <code>aws-cdk-lib.aws_ec2.IVpc</code> | The VPC that the cluster will be created in. |
 | <code><a href="#zeebe-cdk-constructs.ZeebeStandaloneProps.property.zeebeEnvironmentVars">zeebeEnvironmentVars</a></code> | <code>any</code> | Override the environment variables passed to the Zeebe container. |
 
@@ -541,6 +544,22 @@ Fargate storage will be used and data will be lost when a node is restarted/dest
 
 ---
 
+##### `hazelcastExporter`<sup>Optional</sup> <a name="hazelcastExporter" id="zeebe-cdk-constructs.ZeebeStandaloneProps.property.hazelcastExporter"></a>
+
+```typescript
+public readonly hazelcastExporter: boolean;
+```
+
+- *Type:* boolean
+
+Set to true to enable hazelcast exporter on the Zeebe image.
+
+Note this will build a custom Zeebe image and deploy it onto AWS ECR.
+
+Defaults to false
+
+---
+
 ##### `memory`<sup>Optional</sup> <a name="memory" id="zeebe-cdk-constructs.ZeebeStandaloneProps.property.memory"></a>
 
 ```typescript
@@ -563,10 +582,7 @@ public readonly namespace: INamespace;
 
 - *Type:* aws-cdk-lib.aws_servicediscovery.INamespace
 
-A CloudMap private name space to be used for service discover.
-
-If not specified a private name space
-called zeebe-cluster.net will be created.
+If specifying a custom namespace, also set useNamespace to true.
 
 ---
 
@@ -609,6 +625,36 @@ public readonly securityGroups: ISecurityGroup[];
 - *Type:* aws-cdk-lib.aws_ec2.ISecurityGroup[]
 
 The security groups to assign to the cluster.
+
+---
+
+##### `simpleMonitor`<sup>Optional</sup> <a name="simpleMonitor" id="zeebe-cdk-constructs.ZeebeStandaloneProps.property.simpleMonitor"></a>
+
+```typescript
+public readonly simpleMonitor: boolean;
+```
+
+- *Type:* boolean
+
+Set to true to deploy the simple monitor instance along side the Zeebe instance to allow monitoring of processes.
+
+Defaults to false
+
+---
+
+##### `useNamespace`<sup>Optional</sup> <a name="useNamespace" id="zeebe-cdk-constructs.ZeebeStandaloneProps.property.useNamespace"></a>
+
+```typescript
+public readonly useNamespace: boolean;
+```
+
+- *Type:* boolean
+
+If true, then DNS hostnames will be registered in a Cloud Map to allow for service discovery.
+
+If this value is true and a namespace is not provided then a default private name space called zeebe-cluster.net will be created.
+
+Default is false
 
 ---
 

@@ -7,12 +7,11 @@ This is a library of CDK constructs and patterns for deploying the Camunda Zeebe
 A single Zeebe instance that is configured as both gateway and broker, deployed as Fargate service Deployed in a public
 subnet on AWS default VPC EFS file system is mounted for Zeebe storage /usr/data/local
 
-With the default configuration, the following infrastructure will be created on AWS:
+With the default configuration settings, the following infrastructure will be created on AWS:
 
-* New VPC on CIDR 10.0.0.0/16
-* 1 NAT Gateway
+* Default VPC will be used
 * ECS Cluster - zeebe-standalone
-* 1 Zeebe gateway/broker n a public subnet (Public IP4)
+* 1 Zeebe gateway/broker in a public subnet (Public IP4)
 * Zeebe node is configured as a Fargate task definition and service
 * Ephemeral task storage is mounted at /usr/local/zeebe/data (EFS is an option for persistent storage)
 
@@ -27,10 +26,41 @@ export class ZeebeStandaloneFargateStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
 
-        new ZeebeStandaloneFargateCluster(this, 'ZeebeStandalone', {});
+        new ZeebeStandaloneFargateCluster(this, 'ZeebeStandalone', {
+            // Optional - EFS for persistent storage
+            // fileSystem: new FileSystem(this, 'zeebe-efs', { 
+            //     vpc: Vpc.fromLookup(this, 'my-vpc', {vpcId: 'abcxyz'})
+            // });    
+        });
     }
 }
 
+```
+
+## Deploying Simple Monitor with Zeebe
+
+The Simple monitor application can be deployed alongside the Zeebe instance using the configuration below.
+
+* A custom Zeebe image that includes the Hazelcast exporter will be built and stored in ECR of the AWS account.
+* This configuration will create a larger Fargate task using 2Gb of memory
+
+```typescript
+
+import * as cdk from 'aws-cdk-lib';
+import {Construct} from 'constructs';
+import {ZeebeStandaloneFargateCluster} from "zeebe-cdk-constructs";
+
+export class ZeebeStandaloneFargateStack extends cdk.Stack {
+
+    constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+        super(scope, id, props);
+
+        new ZeebeStandaloneFargateCluster(this, 'ZeebeStandaloneWithSimpleMonitor', {
+            simpleMonitor: true,
+            hazelcastExporter: true
+        });
+    }
+}
 
 ```
 
