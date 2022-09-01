@@ -45,6 +45,7 @@ export class ZeebeStandaloneFargateCluster extends Construct {
       cpu: 512,
       ecsCluster: ecsCluster,
       memory: 1024,
+      useNamespace: false,
       namespace: undefined,
       securityGroups: securityGroups,
       vpc: defaultVpc,
@@ -56,12 +57,13 @@ export class ZeebeStandaloneFargateCluster extends Construct {
         { containerPort: 26502, hostPort: 26502, protocol: Protocol.TCP },
       ],
       zeebeEnvironmentVars: {
-        JAVA_TOOL_OPTIONS: '-Xms512m -Xmx512m ',
+        JAVA_TOOL_OPTIONS: '-Xms512m -Xmx512m',
         ATOMIX_LOG_LEVEL: 'DEBUG',
         ZEEBE_BROKER_DATA_DISKUSAGECOMMANDWATERMARK: '0.998',
         ZEEBE_BROKER_DATA_DISKUSAGEREPLICATIONWATERMARK: '0.999',
       },
       containerImage: ContainerImage.fromRegistry('camunda/zeebe:' + this.CAMUNDA_VERSION),
+      simpleMonitor: false,
     };
 
     return {
@@ -76,7 +78,11 @@ export class ZeebeStandaloneFargateCluster extends Construct {
       allowAllOutbound: true,
       securityGroupName: 'zeebe-standalone-sg',
     });
+    sg.addIngressRule(Peer.anyIpv4(), Port.tcp(9600), 'Zeebe Ports', false);
     sg.addIngressRule(Peer.anyIpv4(), Port.tcpRange(26500, 26502), 'Zeebe Ports', false);
+    sg.addIngressRule(Peer.anyIpv4(), Port.tcp(8082), 'Simple Monitor Ports', false);
+    sg.addIngressRule(Peer.anyIpv4(), Port.tcp(5701), 'Hazelcast', false);
+    sg.addIngressRule(Peer.anyIpv4(), Port.udp(5701), 'Hazelcast', false);
     return [sg];
   }
 
@@ -85,8 +91,8 @@ export class ZeebeStandaloneFargateCluster extends Construct {
     let fservice = new FargateService(this, 'zeebe-standalone-service', {
       cluster: this.props.ecsCluster!,
       desiredCount: 1,
-      minHealthyPercent: 100,
-      maxHealthyPercent: 200,
+      minHealthyPercent: 0,
+      maxHealthyPercent: 100,
       serviceName: 'zeebe-standalone',
       taskDefinition: this.standaloneTaskDefinition(),
       securityGroups: this.props.securityGroups,
@@ -97,13 +103,14 @@ export class ZeebeStandaloneFargateCluster extends Construct {
       deploymentController: { type: DeploymentControllerType.ECS },
     });
 
-    if (this.props.namespace != undefined) {
+    if (this.props.useNamespace == true && this.props.namespace == undefined) {
 
       const ns = new PrivateDnsNamespace(this, 'zeebe-default-ns', {
         name: 'zeebe-cluster.net',
         description: 'Zeebe Cluster Namespace',
         vpc: this.props.vpc!,
       });
+
 
       fservice.enableCloudMap({
         name: 'zeebe-standalone',
@@ -117,8 +124,8 @@ export class ZeebeStandaloneFargateCluster extends Construct {
 
   private standaloneTaskDefinition(): FargateTaskDefinition {
     let td = new FargateTaskDefinition(this, 'zeebe-standalone-task-def', {
-      cpu: this.props.cpu!,
-      memoryLimitMiB: this.props.memory!,
+      cpu: this.props.simpleMonitor == true ? 1024 : this.props.cpu!,
+      memoryLimitMiB: this.props.simpleMonitor == true ? 2048 : this.props.memory!,
       family: 'zeebe-standalone',
     });
 
@@ -126,11 +133,11 @@ export class ZeebeStandaloneFargateCluster extends Construct {
 
 
     let container = td.addContainer('zeebe-gw', {
-      cpu: this.props.cpu!,
-      memoryLimitMiB: this.props?.memory!,
+      memoryLimitMiB: this.props.simpleMonitor == true ? 1024 : this.props.memory!,
       containerName: 'zeebe-standalone',
-      image: this.props.containerImage as ContainerImage,
+      image: this.zeebeImage(),
       portMappings: [
+        { containerPort: 9600, hostPort: 9600, protocol: Protocol.TCP },
         { containerPort: 26500, hostPort: 26500, protocol: Protocol.TCP },
         { containerPort: 26501, hostPort: 26501, protocol: Protocol.TCP },
         { containerPort: 26502, hostPort: 26502, protocol: Protocol.TCP },
@@ -154,7 +161,45 @@ export class ZeebeStandaloneFargateCluster extends Construct {
       readOnly: false,
     });
 
+    if (this.props.simpleMonitor) {
+      this.addSimpleMonitorContainer(td);
+    }
+
     return td;
+  }
+
+  private addSimpleMonitorContainer(td: FargateTaskDefinition) {
+    td.addContainer('simple-monitor-container', {
+      memoryLimitMiB: 1024,
+      containerName: 'simple-monitor',
+
+      image: ContainerImage.fromRegistry('ghcr.io/camunda-community-hub/zeebe-simple-monitor:2.4.0'),
+      portMappings: [
+        { containerPort: 8082, hostPort: 8082, protocol: Protocol.TCP },
+        { containerPort: 5701, hostPort: 5701, protocol: Protocol.TCP },
+      ],
+      environment: {
+
+        JAVA_TOOL_OPTIONS: '-Xms512m -Xmx512m -Dzeebe.client.broker.gateway-address=localhost:26500 ' +
+                    '-Dzeebe.client.worker.hazelcast.connection=localhost:5701 -Dsecurity.plaintext=true',
+      },
+      logging: LogDriver.awsLogs({
+        logGroup: new LogGroup(this, 'simple-monitor-logs', {
+          logGroupName: '/ecs/simple-monitor-standalone',
+          removalPolicy: RemovalPolicy.DESTROY,
+          retention: RetentionDays.ONE_MONTH,
+        }),
+        streamPrefix: 'simple',
+      }),
+    });
+  }
+
+  private zeebeImage(): ContainerImage {
+    if (this.props.hazelcastExporter == true) {
+      return ContainerImage.fromRegistry('ghcr.io/camunda-community-hub/zeebe-with-hazelcast-exporter:8.0.5');
+    } else {
+      return this.props.containerImage!;
+    }
   }
 
   private createZeebeVolume(): Volume {

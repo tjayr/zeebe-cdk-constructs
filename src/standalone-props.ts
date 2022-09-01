@@ -35,8 +35,15 @@ export interface ZeebeStandaloneProps extends GlobalProps {
   readonly vpc?: IVpc;
 
   /**
-     * A CloudMap private name space to be used for service discover. If not specified a private name space
-     * called zeebe-cluster.net will be created.
+     * If true, then DNS hostnames will be registered in a Cloud Map to allow for service discovery.
+     * If this value is true and a namespace is not provided then a default private name space called zeebe-cluster.net will be created.
+     *
+     * Default is false
+     */
+  readonly useNamespace?: boolean;
+
+  /**
+     * If specifying a custom namespace, also set useNamespace to true
      *
      */
   readonly namespace?: INamespace;
@@ -87,4 +94,18 @@ export interface ZeebeStandaloneProps extends GlobalProps {
      * Defaults to true.
      */
   readonly publicGateway?: boolean;
+
+  /**
+     * Set to true to deploy the simple monitor instance along side the Zeebe instance to allow monitoring of processes.
+     *
+     * Defaults to false
+     */
+  readonly simpleMonitor?: boolean;
+
+  /**
+     * Set to true to enable hazelcast exporter on the Zeebe image. Note this will build a custom Zeebe image and deploy it onto AWS ECR.
+     *
+     * Defaults to false
+     */
+  readonly hazelcastExporter?: boolean;
 }
