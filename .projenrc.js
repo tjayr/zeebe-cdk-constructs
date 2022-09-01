@@ -33,7 +33,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
   },
   docgen: true,
   dependabot: false,
-  release: false,
+  //release: false,
   buildWorkflow: false,
   githubOptions: {
     pullRequestLintOptions: {
@@ -46,7 +46,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
 
   workflowBootstrapSteps: [{
     name: 'env_setup',
-    run: 'echo Set environment varsexport CDK_DEFAULT_ACCOUNT=eu-west-1',
+    run: 'echo Set environment vars',
     env: {
       CDK_DEFAULT_ACCOUNT: '${{secrets.CDK_DEFAULT_ACCOUNT}}',
       CDK_DEFAULT_REGION: 'eu-west-1',
