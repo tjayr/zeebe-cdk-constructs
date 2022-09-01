@@ -12,8 +12,8 @@ describe('ZeebeCluster', () => {
     const app = new cdk.App();
     const clusterStack = new cdk.Stack(app, 'ZeebeClusterStack', {
       env: {
-        account: process.env.CDK_DEFAULT_ACCOUNT,
-        region: process.env.CDK_DEFAULT_REGION,
+        account: '12345',
+        region: 'eu-west-1',
       },
     });
 
@@ -47,8 +47,8 @@ describe('ZeebeCluster', () => {
     const app = new cdk.App();
     const clusterStack = new cdk.Stack(app, 'ZeebeClusterStack', {
       env: {
-        account: process.env.CDK_DEFAULT_ACCOUNT,
-        region: process.env.CDK_DEFAULT_REGION,
+        account: '12345',
+        region: 'eu-west-1',
       },
     });
 
@@ -78,8 +78,8 @@ describe('ZeebeCluster', () => {
     const app = new cdk.App();
     const clusterStack = new cdk.Stack(app, 'ZeebeClusterStack', {
       env: {
-        account: process.env.CDK_DEFAULT_ACCOUNT,
-        region: process.env.CDK_DEFAULT_REGION,
+        account: '12345',
+        region: 'eu-west-1',
       },
     });
 
@@ -110,8 +110,8 @@ describe('ZeebeCluster', () => {
     const app = new cdk.App();
     const clusterStack = new cdk.Stack(app, 'ZeebeClusterStack', {
       env: {
-        account: process.env.CDK_DEFAULT_ACCOUNT,
-        region: process.env.CDK_DEFAULT_REGION,
+        account: '12345',
+        region: 'eu-west-1',
       },
     });
 
@@ -145,8 +145,8 @@ describe('ZeebeCluster', () => {
     const app = new cdk.App();
     const clusterStack = new cdk.Stack(app, 'ZeebeClusterStack', {
       env: {
-        account: process.env.CDK_DEFAULT_ACCOUNT,
-        region: process.env.CDK_DEFAULT_REGION,
+        account: '12345',
+        region: 'eu-west-1',
       },
     });
 
@@ -183,10 +183,11 @@ describe('ZeebeCluster', () => {
     template.hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         Match.objectLike({
-          Image: Match.objectLike({ 'Fn::Sub': Match.stringLikeRegexp(process.env.CDK_DEFAULT_ACCOUNT + '.dkr.ecr.' + process.env.CDK_DEFAULT_REGION) }),
+          Image: Match.objectLike({ 'Fn::Sub': Match.stringLikeRegexp('12345.dkr.ecr.eu-west-1') }),
         }),
       ],
     });
-  });
+  })
+  ;
 
 });

@@ -30,9 +30,8 @@ export interface ZeebeStandaloneProps extends GlobalProps {
   /**
      * The VPC that the cluster will be created in
      *
-     * If not specified, the cluster will be created in the default VPC
      */
-  readonly vpc?: IVpc;
+  readonly vpc: IVpc;
 
   /**
      * If true, then DNS hostnames will be registered in a Cloud Map to allow for service discovery.
