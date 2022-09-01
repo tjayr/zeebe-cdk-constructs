@@ -9,8 +9,8 @@ describe('CamundaPlatform', () => {
     const app = new cdk.App();
     const clusterStack = new cdk.Stack(app, 'CamundaCoreStack', {
       env: {
-        account: process.env.CDK_DEFAULT_ACCOUNT,
-        region: process.env.CDK_DEFAULT_REGION,
+        account: '12345',
+        region: 'eu-west-1',
       },
     });
 
