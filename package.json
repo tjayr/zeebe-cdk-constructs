@@ -1,5 +1,6 @@
 {
   "name": "zeebe-cdk-constructs",
+  "description": "A collection of constructs for deploying the Camunda Zeebe workflow engine and its associated components on AWS infrastructure",
   "repository": {
     "type": "git",
     "url": "https://github.com/tjayr/zeebe-cdk-constructs.git"

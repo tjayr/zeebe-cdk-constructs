@@ -245,7 +245,7 @@ export class CamundaPlatformCoreFargate extends Construct {
       serviceName: 'zeebe',
       taskDefinition: this.zeebeTaskDefinition(),
       securityGroups: [this.props.zeebeProps?.securityGroup!],
-      vpcSubnets: { subnetType: SubnetType.PUBLIC },
+      vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
       deploymentController: { type: DeploymentControllerType.ECS },
       cloudMapOptions: {
         name: 'zeebe',

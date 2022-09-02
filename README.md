@@ -1,19 +1,28 @@
 # Zeebe CDK Constructs
 
-This is a library of CDK constructs and patterns for deploying the Camunda Zeebe workflow engine on AWS Fargate.
+This is a library of CDK constructs and patterns for deploying the Camunda Zeebe workflow engine on AWS.
 
-## Standalone
+[![View on Construct Hub](https://constructs.dev/badge?package=zeebe-cdk-constructs)](https://constructs.dev/packages/zeebe-cdk-constructs)
 
-A single Zeebe instance that is configured as both gateway and broker, deployed as Fargate service Deployed in a public
-subnet on AWS default VPC EFS file system is mounted for Zeebe storage /usr/data/local
+## Standalone Fargate
+
+![Standalone Fargate Infrastructure](diagrams/standalone-cluster.png)
+
+`ZeebeStandaloneFargateCluster` creates a single Zeebe instance that is configured as both gateway and broker, deployed
+as Fargate service in a public subnet. With some additonal configuration data can be stored on EFS and the Simple
+Monitor application can be co-deployed.
 
 With the default configuration settings, the following infrastructure will be created on AWS:
 
-* A vpc is required - Default VPC will be used
+* A vpc is required - default VPC can be used
 * ECS Cluster - zeebe-standalone
+* 1 Fargate task is created with 0.5 cpu and 1024 memory
 * 1 Zeebe gateway/broker in a public subnet (Public IP4)
 * Zeebe node is configured as a Fargate task definition and service
 * Ephemeral task storage is mounted at /usr/local/zeebe/data (EFS is an option for persistent storage)
+
+Note that a public subnet is used to make the initial setup and verification easier. You should secure the environment
+with an appropriate security group configuration and/or move the deployment into a private vpc subnet.
 
 ```typescript
 
@@ -29,9 +38,11 @@ export class ZeebeStandaloneFargateStack extends cdk.Stack {
         let vpc = Vpc.fromLookup(this, 'my-vpc', {isDefault: true})
 
         new ZeebeStandaloneFargateCluster(this, 'ZeebeStandalone', {
-            vpc: vpc
+            vpc: vpc,
+            //
+            // publicGateway: false, // Deploy the gateway in a private subnet 
             // Optional - EFS for persistent storage
-            // fileSystem: new FileSystem(this, 'zeebe-efs', { vpc: vpc });
+            //fileSystem: new FileSystem(this, 'zeebe-efs', { vpc: vpc })
         });
     }
 }
@@ -43,7 +54,9 @@ export class ZeebeStandaloneFargateStack extends cdk.Stack {
 The Simple monitor application can be deployed alongside the Zeebe instance using the configuration below.
 
 * A custom Zeebe image that includes the Hazelcast exporter will be built and stored in ECR of the AWS account.
-* This configuration will create a larger Fargate task using 2Gb of memory
+* This configuration will create a larger Fargate task using 2Gb of memory - split evenly between the Zeebe and Simple
+  Monitor containers
+*
 
 ```typescript
 
@@ -65,7 +78,9 @@ export class ZeebeStandaloneFargateStack extends cdk.Stack {
 
 ```
 
-## Zeebe Cluster
+## Zeebe Fargate Cluster
+
+![Standalone Fargate Infrastructure](diagrams/zeebe-cluster.png)
 
 The `ZeebeFargateCluster` will create the following infrastructure on AWS
 
@@ -77,6 +92,7 @@ With the default configuration, the following infrastructure will be created on 
 * 1 Zeebe gateway in a public subnet (Public IP4)
 * ECS Cluster
 * Each Zeebe node is configured as a Fargate service
+* Each Zeebe Fargate task is assigned 0.5 cpu and 1024 memory
 * Cloud Map for internal DNS _zeebe-cluster.net_
 * EFS with mount points for Zeebe data storage
 
@@ -93,7 +109,12 @@ export class ZeebeFargateClusterStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
 
-        new ZeebeFargateCluster(this, 'ZeebeCluster', {});
+        new ZeebeFargateCluster(this, 'ZeebeCluster', {
+            // cpu: 512,                //Broker task cpu
+            // memory: 1024,            //Broker task memory
+            // gatewayCpu: 512,             
+            // gatewayMemory: 1024,
+        });
     }
 }
 

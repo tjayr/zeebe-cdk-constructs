@@ -58,22 +58,22 @@ export interface CamundaPlatformProps {
   /**
      * Configuration properties for the Zeebe node in the camunda cluster
      */
-  zeebeProps?: ZeebeProps;
+  readonly zeebeProps?: ZeebeProps;
 
   /**
      * Configuration properties for the Elasticsearch node in the camunda cluster
      */
-  elasticSearchProps?: ElasticsearchProps;
+  readonly elasticSearchProps?: ElasticsearchProps;
 
   /**
      * Configuration properties for the Operate node in the camunda cluster
      */
-  operateProps?: OperateProps;
+  readonly operateProps?: OperateProps;
 
   /**
      * Configuration properties for the Tasklist node in the camunda cluster
      */
-  taskListProps?: TaskListProps;
+  readonly taskListProps?: TaskListProps;
 
 
   /**
@@ -84,13 +84,13 @@ export interface CamundaPlatformProps {
      * Default is false
      *
      */
-  useEfsStorage?: boolean;
+  readonly useEfsStorage?: boolean;
 
   /**
      * A default EFS will be created if this is not specified
      * Use the fileSystem property to customise a file system
      */
-  fileSystem?: FileSystem;
+  readonly fileSystem?: FileSystem;
 
 
   /**
