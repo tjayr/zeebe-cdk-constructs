@@ -2,6 +2,107 @@
 
 ## Constructs <a name="Constructs" id="Constructs"></a>
 
+### CamundaPlatformCoreFargate <a name="CamundaPlatformCoreFargate" id="zeebe-cdk-constructs.CamundaPlatformCoreFargate"></a>
+
+A construct pattern to create a Camunda 8 cluster comprising of Zeebe, Operate, Tasklist and Elasticsearch deployed on AWS ECS Fargate with an application loadbalancer allowing http access to Operate and Tasklist.
+
+#### Initializers <a name="Initializers" id="zeebe-cdk-constructs.CamundaPlatformCoreFargate.Initializer"></a>
+
+```typescript
+import { CamundaPlatformCoreFargate } from 'zeebe-cdk-constructs'
+
+new CamundaPlatformCoreFargate(scope: Construct, id: string, properties: CamundaPlatformProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#zeebe-cdk-constructs.CamundaPlatformCoreFargate.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
+| <code><a href="#zeebe-cdk-constructs.CamundaPlatformCoreFargate.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#zeebe-cdk-constructs.CamundaPlatformCoreFargate.Initializer.parameter.properties">properties</a></code> | <code><a href="#zeebe-cdk-constructs.CamundaPlatformProps">CamundaPlatformProps</a></code> | *No description.* |
+
+---
+
+##### `scope`<sup>Required</sup> <a name="scope" id="zeebe-cdk-constructs.CamundaPlatformCoreFargate.Initializer.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+##### `id`<sup>Required</sup> <a name="id" id="zeebe-cdk-constructs.CamundaPlatformCoreFargate.Initializer.parameter.id"></a>
+
+- *Type:* string
+
+---
+
+##### `properties`<sup>Required</sup> <a name="properties" id="zeebe-cdk-constructs.CamundaPlatformCoreFargate.Initializer.parameter.properties"></a>
+
+- *Type:* <a href="#zeebe-cdk-constructs.CamundaPlatformProps">CamundaPlatformProps</a>
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#zeebe-cdk-constructs.CamundaPlatformCoreFargate.toString">toString</a></code> | Returns a string representation of this construct. |
+
+---
+
+##### `toString` <a name="toString" id="zeebe-cdk-constructs.CamundaPlatformCoreFargate.toString"></a>
+
+```typescript
+public toString(): string
+```
+
+Returns a string representation of this construct.
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#zeebe-cdk-constructs.CamundaPlatformCoreFargate.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+
+---
+
+##### ~~`isConstruct`~~ <a name="isConstruct" id="zeebe-cdk-constructs.CamundaPlatformCoreFargate.isConstruct"></a>
+
+```typescript
+import { CamundaPlatformCoreFargate } from 'zeebe-cdk-constructs'
+
+CamundaPlatformCoreFargate.isConstruct(x: any)
+```
+
+Checks if `x` is a construct.
+
+###### `x`<sup>Required</sup> <a name="x" id="zeebe-cdk-constructs.CamundaPlatformCoreFargate.isConstruct.parameter.x"></a>
+
+- *Type:* any
+
+Any object.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#zeebe-cdk-constructs.CamundaPlatformCoreFargate.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+
+---
+
+##### `node`<sup>Required</sup> <a name="node" id="zeebe-cdk-constructs.CamundaPlatformCoreFargate.property.node"></a>
+
+```typescript
+public readonly node: Node;
+```
+
+- *Type:* constructs.Node
+
+The tree node.
+
+---
+
+
 ### ZeebeFargateCluster <a name="ZeebeFargateCluster" id="zeebe-cdk-constructs.ZeebeFargateCluster"></a>
 
 A construct to create a Zeebe cluster on AWS Fargate.
@@ -212,6 +313,255 @@ The tree node.
 
 ## Structs <a name="Structs" id="Structs"></a>
 
+### CamundaPlatformProps <a name="CamundaPlatformProps" id="zeebe-cdk-constructs.CamundaPlatformProps"></a>
+
+Properties for configuraing the CAmunda Core Platform compoennts.
+
+#### Initializer <a name="Initializer" id="zeebe-cdk-constructs.CamundaPlatformProps.Initializer"></a>
+
+```typescript
+import { CamundaPlatformProps } from 'zeebe-cdk-constructs'
+
+const camundaPlatformProps: CamundaPlatformProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#zeebe-cdk-constructs.CamundaPlatformProps.property.ecsCluster">ecsCluster</a></code> | <code>aws-cdk-lib.aws_ecs.ICluster</code> | The ECS cluster to create the Zeebe nodes in. |
+| <code><a href="#zeebe-cdk-constructs.CamundaPlatformProps.property.elasticSearchProps">elasticSearchProps</a></code> | <code><a href="#zeebe-cdk-constructs.ElasticsearchProps">ElasticsearchProps</a></code> | Configuration properties for the Elasticsearch node in the camunda cluster. |
+| <code><a href="#zeebe-cdk-constructs.CamundaPlatformProps.property.fileSystem">fileSystem</a></code> | <code>aws-cdk-lib.aws_efs.FileSystem</code> | A default EFS will be created if this is not specified Use the fileSystem property to customise a file system. |
+| <code><a href="#zeebe-cdk-constructs.CamundaPlatformProps.property.namespace">namespace</a></code> | <code>aws-cdk-lib.aws_servicediscovery.INamespace</code> | A CloudMap private name space to be used for service discovery. |
+| <code><a href="#zeebe-cdk-constructs.CamundaPlatformProps.property.operateProps">operateProps</a></code> | <code><a href="#zeebe-cdk-constructs.OperateProps">OperateProps</a></code> | Configuration properties for the Operate node in the camunda cluster. |
+| <code><a href="#zeebe-cdk-constructs.CamundaPlatformProps.property.taskListProps">taskListProps</a></code> | <code><a href="#zeebe-cdk-constructs.TaskListProps">TaskListProps</a></code> | Configuration properties for the Tasklist node in the camunda cluster. |
+| <code><a href="#zeebe-cdk-constructs.CamundaPlatformProps.property.useEfsStorage">useEfsStorage</a></code> | <code>boolean</code> | If true, store zeebe data on EFS. |
+| <code><a href="#zeebe-cdk-constructs.CamundaPlatformProps.property.vpc">vpc</a></code> | <code>aws-cdk-lib.aws_ec2.IVpc</code> | The VPC that the cluster will be created in. |
+| <code><a href="#zeebe-cdk-constructs.CamundaPlatformProps.property.zeebeProps">zeebeProps</a></code> | <code><a href="#zeebe-cdk-constructs.ZeebeProps">ZeebeProps</a></code> | Configuration properties for the Zeebe node in the camunda cluster. |
+
+---
+
+##### `ecsCluster`<sup>Optional</sup> <a name="ecsCluster" id="zeebe-cdk-constructs.CamundaPlatformProps.property.ecsCluster"></a>
+
+```typescript
+public readonly ecsCluster: ICluster;
+```
+
+- *Type:* aws-cdk-lib.aws_ecs.ICluster
+
+The ECS cluster to create the Zeebe nodes in.
+
+If not specified a new ECS cluster will be created called zeebe-cluster.
+
+---
+
+##### `elasticSearchProps`<sup>Optional</sup> <a name="elasticSearchProps" id="zeebe-cdk-constructs.CamundaPlatformProps.property.elasticSearchProps"></a>
+
+```typescript
+public readonly elasticSearchProps: ElasticsearchProps;
+```
+
+- *Type:* <a href="#zeebe-cdk-constructs.ElasticsearchProps">ElasticsearchProps</a>
+
+Configuration properties for the Elasticsearch node in the camunda cluster.
+
+---
+
+##### `fileSystem`<sup>Optional</sup> <a name="fileSystem" id="zeebe-cdk-constructs.CamundaPlatformProps.property.fileSystem"></a>
+
+```typescript
+public readonly fileSystem: FileSystem;
+```
+
+- *Type:* aws-cdk-lib.aws_efs.FileSystem
+
+A default EFS will be created if this is not specified Use the fileSystem property to customise a file system.
+
+---
+
+##### `namespace`<sup>Optional</sup> <a name="namespace" id="zeebe-cdk-constructs.CamundaPlatformProps.property.namespace"></a>
+
+```typescript
+public readonly namespace: INamespace;
+```
+
+- *Type:* aws-cdk-lib.aws_servicediscovery.INamespace
+
+A CloudMap private name space to be used for service discovery.
+
+If not specified a private name space
+called camunda-cluster.net will be created.
+
+---
+
+##### `operateProps`<sup>Optional</sup> <a name="operateProps" id="zeebe-cdk-constructs.CamundaPlatformProps.property.operateProps"></a>
+
+```typescript
+public readonly operateProps: OperateProps;
+```
+
+- *Type:* <a href="#zeebe-cdk-constructs.OperateProps">OperateProps</a>
+
+Configuration properties for the Operate node in the camunda cluster.
+
+---
+
+##### `taskListProps`<sup>Optional</sup> <a name="taskListProps" id="zeebe-cdk-constructs.CamundaPlatformProps.property.taskListProps"></a>
+
+```typescript
+public readonly taskListProps: TaskListProps;
+```
+
+- *Type:* <a href="#zeebe-cdk-constructs.TaskListProps">TaskListProps</a>
+
+Configuration properties for the Tasklist node in the camunda cluster.
+
+---
+
+##### `useEfsStorage`<sup>Optional</sup> <a name="useEfsStorage" id="zeebe-cdk-constructs.CamundaPlatformProps.property.useEfsStorage"></a>
+
+```typescript
+public readonly useEfsStorage: boolean;
+```
+
+- *Type:* boolean
+
+If true, store zeebe data on EFS.
+
+When false zeebe data is stored on Fargate ephemereal storage and is lost
+when the service is destroyed. Customise the EFS useing the FileSystem property
+
+
+Default is false
+
+---
+
+##### `vpc`<sup>Optional</sup> <a name="vpc" id="zeebe-cdk-constructs.CamundaPlatformProps.property.vpc"></a>
+
+```typescript
+public readonly vpc: IVpc;
+```
+
+- *Type:* aws-cdk-lib.aws_ec2.IVpc
+
+The VPC that the cluster will be created in.
+
+If this is not specified, a new VPC will be created on CIDR block 10.0.0.0/16
+with a public and private subnet and a single NAT gateway.
+
+---
+
+##### `zeebeProps`<sup>Optional</sup> <a name="zeebeProps" id="zeebe-cdk-constructs.CamundaPlatformProps.property.zeebeProps"></a>
+
+```typescript
+public readonly zeebeProps: ZeebeProps;
+```
+
+- *Type:* <a href="#zeebe-cdk-constructs.ZeebeProps">ZeebeProps</a>
+
+Configuration properties for the Zeebe node in the camunda cluster.
+
+---
+
+### ElasticsearchProps <a name="ElasticsearchProps" id="zeebe-cdk-constructs.ElasticsearchProps"></a>
+
+#### Initializer <a name="Initializer" id="zeebe-cdk-constructs.ElasticsearchProps.Initializer"></a>
+
+```typescript
+import { ElasticsearchProps } from 'zeebe-cdk-constructs'
+
+const elasticsearchProps: ElasticsearchProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#zeebe-cdk-constructs.ElasticsearchProps.property.cpu">cpu</a></code> | <code>number</code> | The amount of cpu to assign to the task. |
+| <code><a href="#zeebe-cdk-constructs.ElasticsearchProps.property.environment">environment</a></code> | <code>any</code> | Environment variables to be passed to components docker container. |
+| <code><a href="#zeebe-cdk-constructs.ElasticsearchProps.property.image">image</a></code> | <code>aws-cdk-lib.aws_ecs.ContainerImage</code> | Container image for the component. |
+| <code><a href="#zeebe-cdk-constructs.ElasticsearchProps.property.memory">memory</a></code> | <code>number</code> | The amount of memory to assign to the task. |
+| <code><a href="#zeebe-cdk-constructs.ElasticsearchProps.property.portMappings">portMappings</a></code> | <code>aws-cdk-lib.aws_ecs.PortMapping[]</code> | Override the port mappings of the container. |
+| <code><a href="#zeebe-cdk-constructs.ElasticsearchProps.property.securityGroup">securityGroup</a></code> | <code>aws-cdk-lib.aws_ec2.ISecurityGroup</code> | *No description.* |
+
+---
+
+##### `cpu`<sup>Optional</sup> <a name="cpu" id="zeebe-cdk-constructs.ElasticsearchProps.property.cpu"></a>
+
+```typescript
+public readonly cpu: number;
+```
+
+- *Type:* number
+
+The amount of cpu to assign to the task.
+
+Must be one of the supported Fargate memory configurations. Defaults to 512
+
+---
+
+##### `environment`<sup>Optional</sup> <a name="environment" id="zeebe-cdk-constructs.ElasticsearchProps.property.environment"></a>
+
+```typescript
+public readonly environment: any;
+```
+
+- *Type:* any
+
+Environment variables to be passed to components docker container.
+
+---
+
+##### `image`<sup>Optional</sup> <a name="image" id="zeebe-cdk-constructs.ElasticsearchProps.property.image"></a>
+
+```typescript
+public readonly image: ContainerImage;
+```
+
+- *Type:* aws-cdk-lib.aws_ecs.ContainerImage
+
+Container image for the component.
+
+---
+
+##### `memory`<sup>Optional</sup> <a name="memory" id="zeebe-cdk-constructs.ElasticsearchProps.property.memory"></a>
+
+```typescript
+public readonly memory: number;
+```
+
+- *Type:* number
+
+The amount of memory to assign to the task.
+
+Must be one of the supported Fargate memory configurations. Defaults to 1024
+
+---
+
+##### `portMappings`<sup>Optional</sup> <a name="portMappings" id="zeebe-cdk-constructs.ElasticsearchProps.property.portMappings"></a>
+
+```typescript
+public readonly portMappings: PortMapping[];
+```
+
+- *Type:* aws-cdk-lib.aws_ecs.PortMapping[]
+
+Override the port mappings of the container.
+
+The default port mappings are 26500, 26501, 26502
+
+---
+
+##### `securityGroup`<sup>Optional</sup> <a name="securityGroup" id="zeebe-cdk-constructs.ElasticsearchProps.property.securityGroup"></a>
+
+```typescript
+public readonly securityGroup: ISecurityGroup;
+```
+
+- *Type:* aws-cdk-lib.aws_ec2.ISecurityGroup
+
+---
+
 ### GlobalProps <a name="GlobalProps" id="zeebe-cdk-constructs.GlobalProps"></a>
 
 #### Initializer <a name="Initializer" id="zeebe-cdk-constructs.GlobalProps.Initializer"></a>
@@ -241,6 +591,292 @@ public readonly containerImage: ContainerImage;
 Using this property you can specify a custom container image from a custom registry.
 
 Defaults to camunda/zeebe:latest from Docker hub if not set.
+
+---
+
+### OperateProps <a name="OperateProps" id="zeebe-cdk-constructs.OperateProps"></a>
+
+#### Initializer <a name="Initializer" id="zeebe-cdk-constructs.OperateProps.Initializer"></a>
+
+```typescript
+import { OperateProps } from 'zeebe-cdk-constructs'
+
+const operateProps: OperateProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#zeebe-cdk-constructs.OperateProps.property.cpu">cpu</a></code> | <code>number</code> | The amount of cpu to assign to the task. |
+| <code><a href="#zeebe-cdk-constructs.OperateProps.property.environment">environment</a></code> | <code>any</code> | Environment variables to be passed to components docker container. |
+| <code><a href="#zeebe-cdk-constructs.OperateProps.property.image">image</a></code> | <code>aws-cdk-lib.aws_ecs.ContainerImage</code> | Container image for the component. |
+| <code><a href="#zeebe-cdk-constructs.OperateProps.property.memory">memory</a></code> | <code>number</code> | The amount of memory to assign to the task. |
+| <code><a href="#zeebe-cdk-constructs.OperateProps.property.portMappings">portMappings</a></code> | <code>aws-cdk-lib.aws_ecs.PortMapping[]</code> | Override the port mappings of the container. |
+| <code><a href="#zeebe-cdk-constructs.OperateProps.property.securityGroup">securityGroup</a></code> | <code>aws-cdk-lib.aws_ec2.ISecurityGroup</code> | *No description.* |
+
+---
+
+##### `cpu`<sup>Optional</sup> <a name="cpu" id="zeebe-cdk-constructs.OperateProps.property.cpu"></a>
+
+```typescript
+public readonly cpu: number;
+```
+
+- *Type:* number
+
+The amount of cpu to assign to the task.
+
+Must be one of the supported Fargate memory configurations. Defaults to 512
+
+---
+
+##### `environment`<sup>Optional</sup> <a name="environment" id="zeebe-cdk-constructs.OperateProps.property.environment"></a>
+
+```typescript
+public readonly environment: any;
+```
+
+- *Type:* any
+
+Environment variables to be passed to components docker container.
+
+---
+
+##### `image`<sup>Optional</sup> <a name="image" id="zeebe-cdk-constructs.OperateProps.property.image"></a>
+
+```typescript
+public readonly image: ContainerImage;
+```
+
+- *Type:* aws-cdk-lib.aws_ecs.ContainerImage
+
+Container image for the component.
+
+---
+
+##### `memory`<sup>Optional</sup> <a name="memory" id="zeebe-cdk-constructs.OperateProps.property.memory"></a>
+
+```typescript
+public readonly memory: number;
+```
+
+- *Type:* number
+
+The amount of memory to assign to the task.
+
+Must be one of the supported Fargate memory configurations. Defaults to 1024
+
+---
+
+##### `portMappings`<sup>Optional</sup> <a name="portMappings" id="zeebe-cdk-constructs.OperateProps.property.portMappings"></a>
+
+```typescript
+public readonly portMappings: PortMapping[];
+```
+
+- *Type:* aws-cdk-lib.aws_ecs.PortMapping[]
+
+Override the port mappings of the container.
+
+The default port mappings are 26500, 26501, 26502
+
+---
+
+##### `securityGroup`<sup>Optional</sup> <a name="securityGroup" id="zeebe-cdk-constructs.OperateProps.property.securityGroup"></a>
+
+```typescript
+public readonly securityGroup: ISecurityGroup;
+```
+
+- *Type:* aws-cdk-lib.aws_ec2.ISecurityGroup
+
+---
+
+### PlatformBaseProps <a name="PlatformBaseProps" id="zeebe-cdk-constructs.PlatformBaseProps"></a>
+
+#### Initializer <a name="Initializer" id="zeebe-cdk-constructs.PlatformBaseProps.Initializer"></a>
+
+```typescript
+import { PlatformBaseProps } from 'zeebe-cdk-constructs'
+
+const platformBaseProps: PlatformBaseProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#zeebe-cdk-constructs.PlatformBaseProps.property.cpu">cpu</a></code> | <code>number</code> | The amount of cpu to assign to the task. |
+| <code><a href="#zeebe-cdk-constructs.PlatformBaseProps.property.environment">environment</a></code> | <code>any</code> | Environment variables to be passed to components docker container. |
+| <code><a href="#zeebe-cdk-constructs.PlatformBaseProps.property.image">image</a></code> | <code>aws-cdk-lib.aws_ecs.ContainerImage</code> | Container image for the component. |
+| <code><a href="#zeebe-cdk-constructs.PlatformBaseProps.property.memory">memory</a></code> | <code>number</code> | The amount of memory to assign to the task. |
+| <code><a href="#zeebe-cdk-constructs.PlatformBaseProps.property.portMappings">portMappings</a></code> | <code>aws-cdk-lib.aws_ecs.PortMapping[]</code> | Override the port mappings of the container. |
+
+---
+
+##### `cpu`<sup>Optional</sup> <a name="cpu" id="zeebe-cdk-constructs.PlatformBaseProps.property.cpu"></a>
+
+```typescript
+public readonly cpu: number;
+```
+
+- *Type:* number
+
+The amount of cpu to assign to the task.
+
+Must be one of the supported Fargate memory configurations. Defaults to 512
+
+---
+
+##### `environment`<sup>Optional</sup> <a name="environment" id="zeebe-cdk-constructs.PlatformBaseProps.property.environment"></a>
+
+```typescript
+public readonly environment: any;
+```
+
+- *Type:* any
+
+Environment variables to be passed to components docker container.
+
+---
+
+##### `image`<sup>Optional</sup> <a name="image" id="zeebe-cdk-constructs.PlatformBaseProps.property.image"></a>
+
+```typescript
+public readonly image: ContainerImage;
+```
+
+- *Type:* aws-cdk-lib.aws_ecs.ContainerImage
+
+Container image for the component.
+
+---
+
+##### `memory`<sup>Optional</sup> <a name="memory" id="zeebe-cdk-constructs.PlatformBaseProps.property.memory"></a>
+
+```typescript
+public readonly memory: number;
+```
+
+- *Type:* number
+
+The amount of memory to assign to the task.
+
+Must be one of the supported Fargate memory configurations. Defaults to 1024
+
+---
+
+##### `portMappings`<sup>Optional</sup> <a name="portMappings" id="zeebe-cdk-constructs.PlatformBaseProps.property.portMappings"></a>
+
+```typescript
+public readonly portMappings: PortMapping[];
+```
+
+- *Type:* aws-cdk-lib.aws_ecs.PortMapping[]
+
+Override the port mappings of the container.
+
+The default port mappings are 26500, 26501, 26502
+
+---
+
+### TaskListProps <a name="TaskListProps" id="zeebe-cdk-constructs.TaskListProps"></a>
+
+#### Initializer <a name="Initializer" id="zeebe-cdk-constructs.TaskListProps.Initializer"></a>
+
+```typescript
+import { TaskListProps } from 'zeebe-cdk-constructs'
+
+const taskListProps: TaskListProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#zeebe-cdk-constructs.TaskListProps.property.cpu">cpu</a></code> | <code>number</code> | The amount of cpu to assign to the task. |
+| <code><a href="#zeebe-cdk-constructs.TaskListProps.property.environment">environment</a></code> | <code>any</code> | Environment variables to be passed to components docker container. |
+| <code><a href="#zeebe-cdk-constructs.TaskListProps.property.image">image</a></code> | <code>aws-cdk-lib.aws_ecs.ContainerImage</code> | Container image for the component. |
+| <code><a href="#zeebe-cdk-constructs.TaskListProps.property.memory">memory</a></code> | <code>number</code> | The amount of memory to assign to the task. |
+| <code><a href="#zeebe-cdk-constructs.TaskListProps.property.portMappings">portMappings</a></code> | <code>aws-cdk-lib.aws_ecs.PortMapping[]</code> | Override the port mappings of the container. |
+| <code><a href="#zeebe-cdk-constructs.TaskListProps.property.securityGroup">securityGroup</a></code> | <code>aws-cdk-lib.aws_ec2.ISecurityGroup</code> | *No description.* |
+
+---
+
+##### `cpu`<sup>Optional</sup> <a name="cpu" id="zeebe-cdk-constructs.TaskListProps.property.cpu"></a>
+
+```typescript
+public readonly cpu: number;
+```
+
+- *Type:* number
+
+The amount of cpu to assign to the task.
+
+Must be one of the supported Fargate memory configurations. Defaults to 512
+
+---
+
+##### `environment`<sup>Optional</sup> <a name="environment" id="zeebe-cdk-constructs.TaskListProps.property.environment"></a>
+
+```typescript
+public readonly environment: any;
+```
+
+- *Type:* any
+
+Environment variables to be passed to components docker container.
+
+---
+
+##### `image`<sup>Optional</sup> <a name="image" id="zeebe-cdk-constructs.TaskListProps.property.image"></a>
+
+```typescript
+public readonly image: ContainerImage;
+```
+
+- *Type:* aws-cdk-lib.aws_ecs.ContainerImage
+
+Container image for the component.
+
+---
+
+##### `memory`<sup>Optional</sup> <a name="memory" id="zeebe-cdk-constructs.TaskListProps.property.memory"></a>
+
+```typescript
+public readonly memory: number;
+```
+
+- *Type:* number
+
+The amount of memory to assign to the task.
+
+Must be one of the supported Fargate memory configurations. Defaults to 1024
+
+---
+
+##### `portMappings`<sup>Optional</sup> <a name="portMappings" id="zeebe-cdk-constructs.TaskListProps.property.portMappings"></a>
+
+```typescript
+public readonly portMappings: PortMapping[];
+```
+
+- *Type:* aws-cdk-lib.aws_ecs.PortMapping[]
+
+Override the port mappings of the container.
+
+The default port mappings are 26500, 26501, 26502
+
+---
+
+##### `securityGroup`<sup>Optional</sup> <a name="securityGroup" id="zeebe-cdk-constructs.TaskListProps.property.securityGroup"></a>
+
+```typescript
+public readonly securityGroup: ISecurityGroup;
+```
+
+- *Type:* aws-cdk-lib.aws_ec2.ISecurityGroup
 
 ---
 
@@ -453,6 +1089,105 @@ public readonly vpc: IVpc;
 The VPC that the cluster will be created in.
 
 If not specified a new VPC will be created using CIDR 10.0.0.0/16
+
+---
+
+### ZeebeProps <a name="ZeebeProps" id="zeebe-cdk-constructs.ZeebeProps"></a>
+
+#### Initializer <a name="Initializer" id="zeebe-cdk-constructs.ZeebeProps.Initializer"></a>
+
+```typescript
+import { ZeebeProps } from 'zeebe-cdk-constructs'
+
+const zeebeProps: ZeebeProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#zeebe-cdk-constructs.ZeebeProps.property.cpu">cpu</a></code> | <code>number</code> | The amount of cpu to assign to the task. |
+| <code><a href="#zeebe-cdk-constructs.ZeebeProps.property.environment">environment</a></code> | <code>any</code> | Environment variables to be passed to components docker container. |
+| <code><a href="#zeebe-cdk-constructs.ZeebeProps.property.image">image</a></code> | <code>aws-cdk-lib.aws_ecs.ContainerImage</code> | Container image for the component. |
+| <code><a href="#zeebe-cdk-constructs.ZeebeProps.property.memory">memory</a></code> | <code>number</code> | The amount of memory to assign to the task. |
+| <code><a href="#zeebe-cdk-constructs.ZeebeProps.property.portMappings">portMappings</a></code> | <code>aws-cdk-lib.aws_ecs.PortMapping[]</code> | Override the port mappings of the container. |
+| <code><a href="#zeebe-cdk-constructs.ZeebeProps.property.securityGroup">securityGroup</a></code> | <code>aws-cdk-lib.aws_ec2.ISecurityGroup</code> | *No description.* |
+
+---
+
+##### `cpu`<sup>Optional</sup> <a name="cpu" id="zeebe-cdk-constructs.ZeebeProps.property.cpu"></a>
+
+```typescript
+public readonly cpu: number;
+```
+
+- *Type:* number
+
+The amount of cpu to assign to the task.
+
+Must be one of the supported Fargate memory configurations. Defaults to 512
+
+---
+
+##### `environment`<sup>Optional</sup> <a name="environment" id="zeebe-cdk-constructs.ZeebeProps.property.environment"></a>
+
+```typescript
+public readonly environment: any;
+```
+
+- *Type:* any
+
+Environment variables to be passed to components docker container.
+
+---
+
+##### `image`<sup>Optional</sup> <a name="image" id="zeebe-cdk-constructs.ZeebeProps.property.image"></a>
+
+```typescript
+public readonly image: ContainerImage;
+```
+
+- *Type:* aws-cdk-lib.aws_ecs.ContainerImage
+
+Container image for the component.
+
+---
+
+##### `memory`<sup>Optional</sup> <a name="memory" id="zeebe-cdk-constructs.ZeebeProps.property.memory"></a>
+
+```typescript
+public readonly memory: number;
+```
+
+- *Type:* number
+
+The amount of memory to assign to the task.
+
+Must be one of the supported Fargate memory configurations. Defaults to 1024
+
+---
+
+##### `portMappings`<sup>Optional</sup> <a name="portMappings" id="zeebe-cdk-constructs.ZeebeProps.property.portMappings"></a>
+
+```typescript
+public readonly portMappings: PortMapping[];
+```
+
+- *Type:* aws-cdk-lib.aws_ecs.PortMapping[]
+
+Override the port mappings of the container.
+
+The default port mappings are 26500, 26501, 26502
+
+---
+
+##### `securityGroup`<sup>Optional</sup> <a name="securityGroup" id="zeebe-cdk-constructs.ZeebeProps.property.securityGroup"></a>
+
+```typescript
+public readonly securityGroup: ISecurityGroup;
+```
+
+- *Type:* aws-cdk-lib.aws_ec2.ISecurityGroup
 
 ---
 

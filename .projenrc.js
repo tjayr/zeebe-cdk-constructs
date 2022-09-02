@@ -3,6 +3,7 @@ const { awscdk, RenovatebotScheduleInterval } = require('projen');
 const project = new awscdk.AwsCdkConstructLibrary({
   author: 'Tony Ayres',
   authorAddress: 'tayres@gmail.com',
+  description: 'A collection of constructs for deploying the Camunda Zeebe workflow engine and its associated components on AWS infrastructure',
   cdkVersion: '2.39.1',
   defaultReleaseBranch: 'main',
   name: 'zeebe-cdk-constructs',
@@ -11,6 +12,8 @@ const project = new awscdk.AwsCdkConstructLibrary({
   keywords: ['cdk', 'aws-cdk', 'awscdk', 'camunda', 'zeebe'],
   stability: 'experimental',
   majorVersion: '0',
+  npmignoreEnabled: true,
+
 
   // deps: [],                /* Runtime dependencies of this module. */
   // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
@@ -46,5 +49,6 @@ const project = new awscdk.AwsCdkConstructLibrary({
 
 });
 
-
+project.addPackageIgnore('/diagrams');
+project.addPackageIgnore('/benchmark');
 project.synth();
