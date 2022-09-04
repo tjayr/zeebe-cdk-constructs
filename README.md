@@ -56,7 +56,6 @@ The Simple monitor application can be deployed alongside the Zeebe instance usin
 * A custom Zeebe image that includes the Hazelcast exporter will be built and stored in ECR of the AWS account.
 * This configuration will create a larger Fargate task using 2Gb of memory - split evenly between the Zeebe and Simple
   Monitor containers
-*
 
 ```typescript
 
@@ -136,6 +135,35 @@ export class ZeebeFargateClusterStack extends cdk.Stack {
         });
     }
 }
+
+```
+
+## Camunda Core Simple
+
+![Camunda Core Simple Infrastructure](diagrams/camunda-platform-core-simple.png)
+
+A construct pattern to create a Camunda 8 cluster comprising of Zeebe, Operate, Tasklist and Elasticsearch deployed on
+AWS ECS Fargate.
+
+The simple version creates all components within a single Fargate task definition and service. This simplifies the
+networking as each component can refer to other components using localhost/127.0.0.1 (instead of Cloud Map service
+discovery) - this approach is also cheaper. The drawback is a lack resilience as if one component fails, then the entire
+task may need to be restarted, which will restart all components, as this construct is best used to spin up development
+or testing environments
+
+* Fargate task containing Zeebe, Operate, Tasklist, Elasticsearch
+* The Fargate task by default is assigned 3gb memory and 1 cpu
+
+```typescript
+export class CamundaCoreSimpleStack extends cdk.Stack {
+
+    constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+        super(scope, id, props);
+
+        //This will create a new VPC and ECS cluster
+        new CamundaPlatformCoreSimple(this, 'camunda-simple-fargate', {useEfsStorage: true});
+    }
+}
 ```
 
 ## Camunda Core (experimental - work in progress)
@@ -168,3 +196,4 @@ export class CamundaCoreStack extends cdk.Stack {
     }
 }
 ```
+
