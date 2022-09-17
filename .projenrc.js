@@ -33,7 +33,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
   // },
   renovatebot: true,
   renovatebotOptions: {
-    scheduleInterval: [RenovatebotScheduleInterval.WEEKENDS],
+    scheduleInterval: [RenovatebotScheduleInterval.MONTHLY],
   },
   docgen: true,
   dependabot: false,
