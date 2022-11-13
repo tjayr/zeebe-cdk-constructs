@@ -33,8 +33,6 @@
     "standard-version",
     "ts-jest",
     "@types/prettier",
-    "@types/responselike",
-    "got",
     "aws-cdk-lib",
     "constructs",
     "projen"
