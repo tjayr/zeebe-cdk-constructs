@@ -1417,12 +1417,12 @@ Override the environment variables passed to the Zeebe container.
 
 If not specified, then the following default environment is passed to the zeebe container
 
-  ```ts
+ ```ts
 {
-  JAVA_TOOL_OPTIONS: '-Xms512m -Xmx512m ',
-  ATOMIX_LOG_LEVEL: 'DEBUG',
-  ZEEBE_BROKER_DATA_DISKUSAGECOMMANDWATERMARK: '0.998',
-  ZEEBE_BROKER_DATA_DISKUSAGEREPLICATIONWATERMARK: '0.999'
+ JAVA_TOOL_OPTIONS: '-Xms512m -Xmx512m ',
+ ATOMIX_LOG_LEVEL: 'DEBUG',
+ ZEEBE_BROKER_DATA_DISKUSAGECOMMANDWATERMARK: '0.998',
+ ZEEBE_BROKER_DATA_DISKUSAGEREPLICATIONWATERMARK: '0.999'
 }
 
 ```
