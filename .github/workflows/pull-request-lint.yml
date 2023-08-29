@@ -33,3 +33,4 @@ jobs:
             perf
             test
           requireScope: false
+          githubBaseUrl: ${{ github.api_url }}

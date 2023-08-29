@@ -27,16 +27,18 @@
     "@types/node",
     "@typescript-eslint/eslint-plugin",
     "@typescript-eslint/parser",
+    "aws-cdk-lib",
+    "constructs",
     "eslint",
     "jest-junit",
     "jest",
+    "jsii-rosetta",
+    "jsii",
     "npm-check-updates",
     "standard-version",
     "ts-jest",
     "@types/babel__traverse",
     "@types/prettier",
-    "aws-cdk-lib",
-    "constructs",
     "projen"
   ]
 }

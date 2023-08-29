@@ -15,6 +15,7 @@
     ".github/workflows/upgrade-3.yml",
     ".github/workflows/upgrade-main.yml",
     ".gitignore",
+    ".npmrc",
     ".projen/deps.json",
     ".projen/files.json",
     ".projen/tasks.json",

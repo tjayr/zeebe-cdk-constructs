@@ -2,6 +2,7 @@
 !/.gitattributes
 !/.projen/tasks.json
 !/.projen/deps.json
+!/renovate.json5
 !/.projen/files.json
 !/.github/workflows/pull-request-lint.yml
 !/package.json
@@ -48,6 +49,7 @@ junit.xml
 !/.github/workflows/upgrade-2.yml
 !/.github/workflows/upgrade-3.yml
 !/.github/pull_request_template.md
+!/.npmrc
 !/test/
 !/tsconfig.dev.json
 !/src/
@@ -57,4 +59,3 @@ junit.xml
 .jsii
 tsconfig.json
 !/API.md
-!/renovate.json5
